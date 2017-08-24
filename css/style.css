@@ -1,0 +1,31 @@
+/*login_dialog*/
+.login_dialog {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 8px;
+
+}
+
+.login_dialog-card-wide.mdl-card {
+    width: 100%;
+}
+
+.login_dialog-card-wide > .mdl-card__title {
+    color: #fff;
+    height: 176px;
+    background: url('../img/welcome_card.jpg') center / cover;
+}
+
+.login_dialog-card-wide > .mdl-card__menu {
+    color: #fff;
+}
+
+/*Username & Password*/
+.login_dialog-card-wide > form > .mdl-textfield {
+    width: 100%;
+    padding: 20px;
+}
+
+    .login_dialog-card-wide > form > .mdl-textfield > .mdl-textfield__label {
+        padding: 0px 20px;
+    }

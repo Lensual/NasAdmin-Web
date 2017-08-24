@@ -1,0 +1,86 @@
+<!DOCTYPE HTML>
+<!--
+MDL Apache 2.0
+-->
+<html>
+<head>
+    <meta http-equiv="charset" content="utf8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <!-- mdl -->
+    <script src="./js/material.js"></script>
+    <link rel="stylesheet" href="./css/material.css">
+    <link rel="stylesheet" href="./font/iconfont/material-icons.css">
+    <!-- custom -->
+    <script src="./js/functions.js" async="true"></script>
+    <link rel="stylesheet" type="text/css" href="./css/style.css" />
+</head>
+
+<body>
+    <!-- Simple header with scrollable tabs. -->
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+        <header class="mdl-layout__header">
+            <div class="mdl-layout__header-row">
+                <!-- Title -->
+                <span class="mdl-layout-title">NasAdmin</span>
+            </div>
+
+            <!-- Tabs -->
+            <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+                <a href="#login" class="mdl-layout__tab is-active">Login</a>
+                <a href="#about" class="mdl-layout__tab">About</a>
+            </div>
+        </header>
+        <div class="mdl-layout__drawer">
+            <span class="mdl-layout-title">Title</span>
+            <!-- Nav -->
+            <nav class="mdl-navigation">
+                <a class="mdl-navigation__link" href="#">Login</a>
+            </nav>
+        </div>
+        <!-- Content -->
+        <main class="mdl-layout__content">
+            <section class="mdl-layout__tab-panel is-active" id="login">
+                <div class="page-content">
+                    <!-- login_dialog -->
+                    <div class="login_dialog">
+                        <div class="login_dialog-card-wide mdl-card mdl-shadow--2dp">
+                            <div class="mdl-card__title">
+                                <h2 class="mdl-card__title-text">Login</h2>
+                            </div>
+                            <div class="mdl-card__supporting-text">
+                                Please Login
+                            </div>
+                            <form action="#">
+                                <!-- UserName -->
+                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <input class="mdl-textfield__input" type="text" id="username" value="admin">
+                                    <label class="mdl-textfield__label" for="sample1">Username...</label>
+                                </div>
+                                <!-- Password -->
+                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <input class="mdl-textfield__input" type="text" id="password"  value="admin">
+                                    <label class="mdl-textfield__label" for="sample1">Password...</label>
+                                </div>
+                            </form>
+
+                            <div class="mdl-card__actions mdl-card--border">
+                                <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" id="loginDialog_btnLogin">
+                                    Login
+                                </a>
+                            </div>
+                            <div class="mdl-card__menu">
+                                <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+                                    <i class="material-icons">share</i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="mdl-layout__tab-panel" id="about">
+                <div class="page-content"><h3>Hello World!</h3></div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
