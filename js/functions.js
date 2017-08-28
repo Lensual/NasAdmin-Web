@@ -50,6 +50,10 @@ function getNavs() {
             if (xhr.status == 200) {// 200 = OK
                 var json = JSON.parse(xhr.responseText);
                 if (json.isSuccess) {
+                    //sort
+                    json.grant.sort(function (a, b) {
+                        return a.priority - b.priority;
+                    });
                     //async
                     var promises = [];
                     var results = [];
@@ -60,30 +64,16 @@ function getNavs() {
                     for (var i = 0; i < promises.length; i++) {
                         results.push(await promises[i]);
                     }
-
-                    //alert(JSON.stringify(results, null, 2));
-                    //!!整理优先级
-                    
-
-                    //remove Navs
-                    var parentNode = document.getElementById("navs").parentNode;
-                    parentNode.removeChild(document.getElementById("navs"));
                     //generate new Navs
-                    for (var i = 0; i < json.grant.length; i++) {
-                        var nav = document.createElement("div");
-                        nav.id = "navs";
-                        nav.innerHTML += results[i];
-                        parentNode.appendChild(nav);
-
-                        ////a
-                        //var a = document.createElement("a");
-                        //a.className = "mdl-navigation__link";
-                        //a.href = "#"; //test
-                        ////append
-                        //nav.appendChild(a);
-                        //document.getElementById("navs").appendChild(nav);
+                    var navs = document.createElement("nav");
+                    navs.id = "navs";
+                    navs.className = "mdl-navigation";
+                    for (var i = 0; i < results.length; i++) {
+                        navs.innerHTML += results[i];
                     }
-
+                    //replace Navs
+                    document.getElementById("navs").parentNode
+                        .replaceChild(navs, document.getElementById("navs"));
                 } else {
                     alert("getNavs() Error: " + xhr.status + " " + xhr.responseText);
                 }
