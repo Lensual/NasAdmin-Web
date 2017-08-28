@@ -11,7 +11,8 @@ window.onload = function () {
                     var json = JSON.parse(xhr.responseText);
                     if (json.isSuccess) {
                         token = json.token;
-                        getNavs();
+                        var permission = getPermission();
+                        replaceNavs(permission);
                     } else {
                         alert("Login unsuccessful: " + xhr.status + " " + xhr.responseText);
                     }
@@ -42,51 +43,53 @@ window.onload = function () {
     }
 }
 
-//getNavs
-function getNavs() {
+//getPermission
+function getPermission() {
     var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = async function getNavs_xhr_onreadystatechange() {
+    xhr.open("GET", apiUrl + "/auth/permission/?token=" + token, false);
+    xhr.send();
         if (xhr.readyState == 4) {// 4 = "loaded"
             if (xhr.status == 200) {// 200 = OK
                 var json = JSON.parse(xhr.responseText);
                 if (json.isSuccess) {
-                    //sort
-                    json.grant.sort(function (a, b) {
-                        return a.priority - b.priority;
-                    });
-                    //async
-                    var promises = [];
-                    var results = [];
-                    for (var i = 0; i < json.grant.length; i++) {
-                        promises.push(getHtml("./plugins/" + json.grant[i].name + "/nav.html"));
-                    }
-                    //await
-                    for (var i = 0; i < promises.length; i++) {
-                        results.push(await promises[i]);
-                    }
-                    //generate new Navs
-                    var navs = document.createElement("nav");
-                    navs.id = "navs";
-                    navs.className = "mdl-navigation";
-                    for (var i = 0; i < results.length; i++) {
-                        navs.innerHTML += results[i];
-                    }
-                    //replace Navs
-                    document.getElementById("navs").parentNode
-                        .replaceChild(navs, document.getElementById("navs"));
+                    return json;
                 } else {
-                    alert("getNavs() Error: " + xhr.status + " " + xhr.responseText);
+                    alert("getPermission() Error: " + xhr.status + " " + xhr.responseText);
                 }
             }
             else {
-                alert("getNavs() XHR Error: " + xhr.status + " " + xhr.responseText);
+                alert("getPermission() XHR Error: " + xhr.status + " " + xhr.responseText);
             }
         }
-    }
-    xhr.open("GET", apiUrl + "/auth/permission/?token=" + token, true);
-    xhr.send();
 }
 
+//replaceNavs
+async function replaceNavs(permission) {
+    //sort
+    permission.grant.sort(function (a, b) {
+        return a.priority - b.priority;
+    });
+    //async
+    var promises = [];
+    var results = [];
+    for (var i = 0; i < permission.grant.length; i++) {
+        promises.push(getHtml("./plugins/" + permission.grant[i].name + "/nav.html"));
+    }
+    //await
+    for (var i = 0; i < promises.length; i++) {
+        results.push(await promises[i]);
+    }
+    //generate new Navs
+    var navs = document.createElement("nav");
+    navs.id = "navs";
+    navs.className = "mdl-navigation";
+    for (var i = 0; i < results.length; i++) {
+        navs.innerHTML += results[i];
+    }
+    //replace Navs
+    document.getElementById("navs").parentNode
+        .replaceChild(navs, document.getElementById("navs"));
+}
 
 async function getHtml(url) {
     return new Promise(function (resolve, reject) {
