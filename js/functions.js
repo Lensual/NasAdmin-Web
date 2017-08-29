@@ -12,7 +12,10 @@ window.onload = function () {
                     if (json.isSuccess) {
                         token = json.token;
                         var permission = getPermission();
-                        replaceNavs(permission);
+                        replaceNavs(permission)
+                            .then(function () {
+                                registerNavOnclick();
+                            });
                     } else {
                         alert("Login unsuccessful: " + xhr.status + " " + xhr.responseText);
                     }
@@ -31,14 +34,18 @@ window.onload = function () {
         );
     }
 
-    //NavOnClick
+    registerNavOnclick();
+
+}
+
+//registerNavOnclick
+function registerNavOnclick() {
     var nav = document.getElementsByClassName("mdl-navigation__link");
     for (var i = 0; i < nav.length; i++) {
-        if (nav[i].getAttribute("href") == "#") {
-            nav[i].onclick = function (e) {
-                e.preventDefault();
-                document.getElementsByClassName("mdl-layout__drawer-button")[0].click();
-            }
+        nav[i].onclick = function (e) {
+            e.preventDefault();
+            replaceTabs(e.currentTarget.getAttribute("href").substr(1))
+            document.getElementsByClassName("mdl-layout__drawer-button")[0].click();
         }
     }
 }
@@ -48,19 +55,19 @@ function getPermission() {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", apiUrl + "/auth/permission/?token=" + token, false);
     xhr.send();
-        if (xhr.readyState == 4) {// 4 = "loaded"
-            if (xhr.status == 200) {// 200 = OK
-                var json = JSON.parse(xhr.responseText);
-                if (json.isSuccess) {
-                    return json;
-                } else {
-                    alert("getPermission() Error: " + xhr.status + " " + xhr.responseText);
-                }
-            }
-            else {
-                alert("getPermission() XHR Error: " + xhr.status + " " + xhr.responseText);
+    if (xhr.readyState == 4) {// 4 = "loaded"
+        if (xhr.status == 200) {// 200 = OK
+            var json = JSON.parse(xhr.responseText);
+            if (json.isSuccess) {
+                return json;
+            } else {
+                alert("getPermission() Error: " + xhr.status + " " + xhr.responseText);
             }
         }
+        else {
+            alert("getPermission() XHR Error: " + xhr.status + " " + xhr.responseText);
+        }
+    }
 }
 
 //replaceNavs
@@ -93,16 +100,16 @@ async function replaceNavs(permission) {
 
 //replaceTabs
 async function replaceTabs(target) {
-    getHtml("./plugins/" + target + "/nav.html")
+    getHtml("./plugins/" + target + "/tab.html")
         .then(function (result) {
             //generate new Navs
-            var tabs = document.createElement("tabs");
+            var tabs = document.createElement("div");
             tabs.id = "tabs";
             tabs.className = "mdl-layout__tab-bar mdl-js-ripple-effect";
             tabs.innerHTML = result;
             //replace Navs
             document.getElementById("tabs").parentNode
-                .replaceChild(navs, document.getElementById("tabs"));
+                .replaceChild(tabs, document.getElementById("tabs"));
         });
 }
 
