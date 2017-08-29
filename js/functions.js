@@ -93,6 +93,7 @@ async function replaceNavs(permission) {
     for (var i = 0; i < results.length; i++) {
         navs.innerHTML += results[i];
     }
+    componentHandler.upgradeElement(navs);
     //replace Navs
     document.getElementById("navs").parentNode
         .replaceChild(navs, document.getElementById("navs"));
@@ -107,12 +108,15 @@ async function replaceTabs(target) {
             tabs.id = "tabs";
             tabs.className = "mdl-layout__tab-bar mdl-js-ripple-effect";
             tabs.innerHTML = result;
+            console.log(tabs);
+            recursionUpgradeElement(tabs);
             //replace Navs
             document.getElementById("tabs").parentNode
                 .replaceChild(tabs, document.getElementById("tabs"));
         });
 }
 
+//getHtml
 async function getHtml(url) {
     return new Promise(function (resolve, reject) {
         var xhr = new XMLHttpRequest();
@@ -127,5 +131,16 @@ async function getHtml(url) {
             }
         }
     });
+}
+
+//recursionUpgradeElement
+function recursionUpgradeElement(element) {
+    if (typeof element === 'object' && element instanceof Element) {
+        componentHandler.upgradeElement(element);
+        console.log(element.nodeName);
+        for (var i = 0; i < element.childNodes.length; i++) {
+            recursionUpgradeElement(element.childNodes[i]);
+        }
+    }
 }
 
