@@ -91,6 +91,21 @@ async function replaceNavs(permission) {
         .replaceChild(navs, document.getElementById("navs"));
 }
 
+//replaceTabs
+async function replaceTabs(target) {
+    getHtml("./plugins/" + target + "/nav.html")
+        .then(function (result) {
+            //generate new Navs
+            var tabs = document.createElement("tabs");
+            tabs.id = "tabs";
+            tabs.className = "mdl-layout__tab-bar mdl-js-ripple-effect";
+            tabs.innerHTML = result;
+            //replace Navs
+            document.getElementById("tabs").parentNode
+                .replaceChild(navs, document.getElementById("tabs"));
+        });
+}
+
 async function getHtml(url) {
     return new Promise(function (resolve, reject) {
         var xhr = new XMLHttpRequest();
@@ -106,11 +121,4 @@ async function getHtml(url) {
         }
     });
 }
-
-function parseDom(arg) {
-    var objE = document.createElement("div");
-    objE.innerHTML = arg;
-    return objE.childNodes;
-};
-
 
