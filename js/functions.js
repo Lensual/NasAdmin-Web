@@ -109,10 +109,12 @@ async function replaceTabs(target) {
             tabs.className = "mdl-layout__tab-bar mdl-js-ripple-effect";
             tabs.innerHTML = result;
             console.log(tabs);
-            recursionUpgradeElement(tabs);
+            //componentHandler.upgradeDom();
+            //recursionUpgradeElement(document.getElementById("header"));
             //replace Navs
             document.getElementById("tabs").parentNode
                 .replaceChild(tabs, document.getElementById("tabs"));
+            componentHandler.upgradeElement(document.getElementById("tabs"), MaterialTabs)
         });
 }
 
@@ -136,8 +138,8 @@ async function getHtml(url) {
 //recursionUpgradeElement
 function recursionUpgradeElement(element) {
     if (typeof element === 'object' && element instanceof Element) {
-        componentHandler.upgradeElement(element);
-        console.log(element.nodeName);
+        //componentHandler.upgradeElement(element);
+        console.log(element);
         for (var i = 0; i < element.childNodes.length; i++) {
             recursionUpgradeElement(element.childNodes[i]);
         }
