@@ -114,7 +114,8 @@ async function replaceTabs(target) {
             //replace Navs
             document.getElementById("tabs").parentNode
                 .replaceChild(tabs, document.getElementById("tabs"));
-            componentHandler.upgradeElement(document.getElementById("tabs"), MaterialTabs)
+            //componentHandler.upgradeElement(document.getElementById("tabs"), MaterialTabs)
+            componentHandler.upgradeAllRegistered();
         });
 }
 
