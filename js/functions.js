@@ -12,7 +12,7 @@ window.onload = function () {
                     if (json.isSuccess) {
                         token = json.token;
                         var permission = getPermission();
-                        replaceNavs(permission)
+                        updateNavs(permission)
                             .then(function () {
                                 registerNavOnclick();
                             });
@@ -44,7 +44,7 @@ function registerNavOnclick() {
     for (var i = 0; i < nav.length; i++) {
         nav[i].onclick = function (e) {
             e.preventDefault();
-            replaceTabs(e.currentTarget.getAttribute("href").substr(1))
+            updateTabs(e.currentTarget.getAttribute("href").substr(1))
             document.getElementsByClassName("mdl-layout__drawer-button")[0].click();
         }
     }
@@ -70,8 +70,8 @@ function getPermission() {
     }
 }
 
-//replaceNavs
-async function replaceNavs(permission) {
+//updateNavs
+async function updateNavs(permission) {
     //sort
     permission.grant.sort(function (a, b) {
         return a.priority - b.priority;
@@ -99,8 +99,8 @@ async function replaceNavs(permission) {
         .replaceChild(navs, document.getElementById("navs"));
 }
 
-//replaceTabs
-async function replaceTabs(target) {
+//updateTabs
+async function updateTabs(target) {
     getHtml("./plugins/" + target + "/tab.html")
         .then(function (result) {
             //generate new Navs
@@ -120,13 +120,6 @@ async function replaceTabs(target) {
                     new MaterialRipple(ripple_containers[j]);
                 }
             }
-
-            //À¬»ø´úÂë
-            //componentHandler.upgradeElement(document.getElementById("layout"), MaterialLayout);
-            //componentHandler.upgradeAllRegistered();
-            //recursionUpgradeElement(document.getElementById("layout"));
-            //componentHandler.upgradeDom();
-            //recursionUpgradeElement(document.getElementById("header"));
         });
 }
 
@@ -146,15 +139,3 @@ async function getHtml(url) {
         }
     });
 }
-
-//recursionUpgradeElement
-function recursionUpgradeElement(element) {
-    if (typeof element === 'object' && element instanceof Element) {
-        //componentHandler.upgradeElement(element);
-        console.log(element);
-        for (var i = 0; i < element.children.length; i++) {
-            recursionUpgradeElement(element.children[i]);
-        }
-    }
-}
-
