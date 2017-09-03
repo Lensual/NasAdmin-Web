@@ -109,13 +109,24 @@ async function replaceTabs(target) {
             tabs.className = "mdl-layout__tab-bar mdl-js-ripple-effect";
             tabs.innerHTML = result;
             console.log(tabs);
-            //componentHandler.upgradeDom();
-            //recursionUpgradeElement(document.getElementById("header"));
             //replace Navs
             document.getElementById("tabs").parentNode
                 .replaceChild(tabs, document.getElementById("tabs"));
-            //componentHandler.upgradeElement(document.getElementById("tabs"), MaterialTabs)
-            componentHandler.upgradeAllRegistered();
+
+            for (var i = 0; i < tabs.children.length; i++) {
+                new MaterialLayoutTab(tabs.children[i], tabs.children, document.getElementById("content").children, document.getElementById("layout").MaterialLayout);
+                var ripple_containers = tabs.children[i].getElementsByClassName("mdl-layout__tab-ripple-container");
+                for (var j = 0; j < ripple_containers.length; j++) {
+                    new MaterialRipple(ripple_containers[j]);
+                }
+            }
+
+            //À¬»ø´úÂë
+            //componentHandler.upgradeElement(document.getElementById("layout"), MaterialLayout);
+            //componentHandler.upgradeAllRegistered();
+            //recursionUpgradeElement(document.getElementById("layout"));
+            //componentHandler.upgradeDom();
+            //recursionUpgradeElement(document.getElementById("header"));
         });
 }
 
@@ -141,8 +152,8 @@ function recursionUpgradeElement(element) {
     if (typeof element === 'object' && element instanceof Element) {
         //componentHandler.upgradeElement(element);
         console.log(element);
-        for (var i = 0; i < element.childNodes.length; i++) {
-            recursionUpgradeElement(element.childNodes[i]);
+        for (var i = 0; i < element.children.length; i++) {
+            recursionUpgradeElement(element.children[i]);
         }
     }
 }
