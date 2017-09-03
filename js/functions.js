@@ -10,11 +10,23 @@ window.onload = function () {
                 if (xhr.status == 200) {// 200 = OK
                     var json = JSON.parse(xhr.responseText);
                     if (json.isSuccess) {
+                        //apply token
                         token = json.token;
+                        //save token
+                        document.cookie = "token=" + escape(token);
+                        //get permission
                         var permission = getPermission();
                         updateNavs(permission)
                             .then(function () {
                                 registerNavOnclick();
+                                //updateContents
+                                var target = document.getElementById("navs")
+                                    .getElementsByClassName("mdl-navigation__link")[0]
+                                    .getAttribute("href").substr(1);
+                                updateContents(target)
+                                    .then(function () {
+                                        updateTabs(target)
+                                    });
                             });
                     } else {
                         alert("Login unsuccessful: " + xhr.status + " " + xhr.responseText);
@@ -34,7 +46,40 @@ window.onload = function () {
         );
     }
 
+    //registerNavOnclick
     registerNavOnclick();
+
+    //autoLogin
+    autoLogin();
+    function autoLogin() {
+        token = getCookie("token");
+        if (token != "") {
+            //get sessionInfo
+            getHtml(apiUrl + "/auth/sessionInfo?token=" + token)
+                .then(function (result) {
+                    var json = JSON.parse(result);
+                    if (json.isSuccess) {
+                    //get permission
+                    var permission = getPermission();
+                    updateNavs(permission)
+                        .then(function () {
+                            registerNavOnclick();
+                            //updateContents
+                            var target = document.getElementById("navs")
+                                .getElementsByClassName("mdl-navigation__link")[0]
+                                .getAttribute("href").substr(1);
+                            updateContents(target)
+                                .then(function () {
+                                    updateTabs(target);
+                                });
+                        });
+                    } else {
+                        console.log("autoLogin Unsuccessful");
+                    }
+                });
+        }
+    }
+
 
 }
 
@@ -161,4 +206,18 @@ async function getHtml(url) {
             }
         }
     });
+}
+
+//getCookie
+function getCookie(c_name) {
+    if (document.cookie.length > 0) {
+        c_start = document.cookie.indexOf(c_name + "=")
+        if (c_start != -1) {
+            c_start = c_start + c_name.length + 1
+            c_end = document.cookie.indexOf(";", c_start)
+            if (c_end == -1) c_end = document.cookie.length
+            return unescape(document.cookie.substring(c_start, c_end))
+        }
+    }
+    return ""
 }
