@@ -44,8 +44,10 @@ function registerNavOnclick() {
     for (var i = 0; i < nav.length; i++) {
         nav[i].onclick = function (e) {
             e.preventDefault();
-            updateTabs(e.currentTarget.getAttribute("href").substr(1))
-            updateContents()
+            updateContents(e.currentTarget.getAttribute("href").substr(1))
+                .then(function () {
+                    updateTabs(e.currentTarget.getAttribute("href").substr(1))
+                });
             document.getElementsByClassName("mdl-layout__drawer-button")[0].click();
         }
     }
@@ -109,13 +111,18 @@ async function updateTabs(target) {
             tabs.id = "tabs";
             tabs.className = "mdl-layout__tab-bar mdl-js-ripple-effect";
             tabs.innerHTML = result;
-            console.log(tabs);
             //replace Navs
             document.getElementById("tabs").parentNode
                 .replaceChild(tabs, document.getElementById("tabs"));
+            //fix MaterialLayout.content_
+            document.getElementById("layout").MaterialLayout.content_ =
+                document.getElementById("contents");
 
             for (var i = 0; i < tabs.children.length; i++) {
-                new MaterialLayoutTab(tabs.children[i], tabs.children, document.getElementById("content").children, document.getElementById("layout").MaterialLayout);
+                new MaterialLayoutTab(tabs.children[i],
+                    tabs.children,
+                    document.getElementById("contents").children,
+                    document.getElementById("layout").MaterialLayout);
                 var ripple_containers = tabs.children[i].getElementsByClassName("mdl-layout__tab-ripple-container");
                 for (var j = 0; j < ripple_containers.length; j++) {
                     new MaterialRipple(ripple_containers[j]);
@@ -133,18 +140,9 @@ async function updateContents(target) {
             contents.id = "contents";
             contents.className = "mdl-layout__content";
             contents.innerHTML = result;
-            console.log(tabs);
-            //replace Navs
-            document.getElementById("tabs").parentNode
-                .replaceChild(tabs, document.getElementById("tabs"));
-
-            for (var i = 0; i < tabs.children.length; i++) {
-                new MaterialLayoutTab(tabs.children[i], tabs.children, document.getElementById("content").children, document.getElementById("layout").MaterialLayout);
-                var ripple_containers = tabs.children[i].getElementsByClassName("mdl-layout__tab-ripple-container");
-                for (var j = 0; j < ripple_containers.length; j++) {
-                    new MaterialRipple(ripple_containers[j]);
-                }
-            }
+            //replace Contents
+            document.getElementById("contents").parentNode
+                .replaceChild(contents, document.getElementById("contents"));
         });
 }
 
