@@ -1,5 +1,6 @@
 var apiUrl = "http://localhost:1337/api";     //!!要设计自动获取地址
 var token;
+var enableAutoLogin = true;
 
 window.onload = function () {
     //login
@@ -50,7 +51,9 @@ window.onload = function () {
     registerNavOnclick();
 
     //autoLogin
-    autoLogin();
+    if (enableAutoLogin) {
+        autoLogin();
+    }
     function autoLogin() {
         token = getCookie("token");
         if (token != "") {
