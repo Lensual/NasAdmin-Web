@@ -1,0 +1,27 @@
+.file {
+    border-color: blue;
+    border-style: solid;
+    text-align: center;
+}
+
+.file-icon {
+    font-size: 48px;
+    /*color: navajowhite;
+        color: gold;
+        color: wheat;
+        color: sandybrown;
+        color: grey;
+        color: darkorange;*/
+    color: orange;
+    display: block;
+}
+
+.file-title {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+
+.file-name {
+    color: white;
+}
+

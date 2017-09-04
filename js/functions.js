@@ -27,6 +27,7 @@ window.onload = function () {
                                 updateContents(target)
                                     .then(function () {
                                         updateTabs(target)
+                                        loadScript(target);
                                     });
                             });
                     } else {
@@ -74,6 +75,7 @@ window.onload = function () {
                             updateContents(target)
                                 .then(function () {
                                     updateTabs(target);
+                                    loadScript(target);
                                 });
                         });
                     } else {
@@ -223,4 +225,11 @@ function getCookie(c_name) {
         }
     }
     return ""
+}
+
+//loadScript
+function loadScript(target) {
+    var script = document.createElement('script');
+    script.src = "./plugins/" + target + "/script.js";
+    document.body.appendChild(script);
 }
