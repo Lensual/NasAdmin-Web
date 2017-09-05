@@ -17,6 +17,7 @@
     padding: 0px;
     background: rgba(0, 0, 0, 0.2);
     text-align: center;
+    padding: 0px 3px;
 }
 
     .fileObject .mdl-card__actions > .file_filename {
@@ -29,10 +30,6 @@
         text-overflow: ellipsis;
         display: block;
     }
-
-.fileObject .mdl-card__actions {
-    padding: 0px 3px;
-}
 
 /* folder */
 .folder > .mdl-card__title > .material-icons {

@@ -97,6 +97,7 @@ function registerNavOnclick() {
             updateContents(e.currentTarget.getAttribute("href").substr(1))
                 .then(function () {
                     updateTabs(e.currentTarget.getAttribute("href").substr(1))
+                    loadScript(e.currentTarget.getAttribute("href").substr(1));
                 });
             document.getElementsByClassName("mdl-layout__drawer-button")[0].click();
         }
