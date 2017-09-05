@@ -7,29 +7,41 @@
         height: 100%;
     }
 
-/*
-    ========================
-    toolbar 
-    ========================
-*/
-#toolbar {
-    margin: 10px auto 0px;
-    width: 98%;
-    height: 50px;
-    min-height: initial;
-    z-index: 2; /*保持悬浮在上层*/
-}
 
 /*
     ========================
     file_manage
     ========================
-*
+*/
 
 /* file_manage */
-#file_manage {
+.file_manage {
     overflow-y: scroll;
     height: 100%;
+    /*padding: 0px 8px 8px 8px;*/
+}
+
+    .file_manage::-webkit-scrollbar {
+        display: none;
+    }
+
+/* toolbar */
+.toolbar {
+    /*margin: 10px auto 0px;*/
+    width: 100%;
+    z-index: 2; /*保持悬浮在上层*/
+    position: absolute;
+}
+
+    .toolbar > .mdl-card {
+        width: 98%;
+        height: 50px;
+        min-height: initial;
+    }
+
+/* file_manage_grid */
+#file_manage_grid {
+    margin-top: 53px;
 }
 
 /* fileObject */
@@ -105,4 +117,3 @@
     color: slategrey;
     display: block;
 }
-
