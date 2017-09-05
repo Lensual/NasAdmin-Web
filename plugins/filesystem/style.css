@@ -1,3 +1,13 @@
+/*#contents {
+    overflow-y: hidden;
+}*/
+
+/*file_manage*/
+#file_manage {
+    overflow-y: scroll;
+    height: -webkit-fill-available;
+}
+
 /* fileObject */
 .fileObject > .mdl-card {
     width: 100%;
