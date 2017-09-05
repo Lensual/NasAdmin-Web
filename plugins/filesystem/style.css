@@ -65,4 +65,10 @@
     display: block;
 }
 
+/* album */
+.album > .mdl-card__title > .material-icons {
+    font-size: 5em;
+    color: slategrey;
+    display: block;
+}
 
