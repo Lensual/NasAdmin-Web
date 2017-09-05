@@ -37,11 +37,12 @@
         width: 98%;
         height: 50px;
         min-height: initial;
+        margin: 11px auto;
     }
 
 /* file_manage_grid */
 #file_manage_grid {
-    margin-top: 53px;
+    margin-top: 57px;
 }
 
 /* fileObject */
