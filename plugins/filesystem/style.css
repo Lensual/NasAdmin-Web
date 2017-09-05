@@ -18,7 +18,7 @@
 .file_manage {
     overflow-y: scroll;
     height: 100%;
-    /*padding: 0px 8px 8px 8px;*/
+    text-align: center;
 }
 
     .file_manage::-webkit-scrollbar {
@@ -38,6 +38,11 @@
         height: 50px;
         min-height: initial;
         margin: 11px auto;
+        text-align: initial;
+    }
+
+    .toolbar div {
+        display: inline-block;
     }
 
 /* file_manage_grid */
