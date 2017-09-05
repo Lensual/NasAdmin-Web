@@ -29,3 +29,10 @@
     .login_dialog-card-wide > form > .mdl-textfield > .mdl-textfield__label {
         padding: 0px 20px;
     }
+
+
+/* contents */ 
+#contents {
+    height: 100%;
+    overflow: hidden;
+}

@@ -1,11 +1,17 @@
-/*#contents {
-    overflow-y: hidden;
-}*/
+/* file_panel */
+#file_panel {
+    height: 100%;
+}
 
-/*file_manage*/
+    #file_panel > .page-content {
+        height: 100%;
+    }
+
+/* file_manage */
 #file_manage {
     overflow-y: scroll;
-    height: -webkit-fill-available;
+    /*height: -webkit-fill-available;*/
+    height: 100%;
 }
 
 /* fileObject */
