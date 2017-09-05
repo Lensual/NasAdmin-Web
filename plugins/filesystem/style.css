@@ -7,10 +7,28 @@
         height: 100%;
     }
 
+/*
+    ========================
+    toolbar 
+    ========================
+*/
+#toolbar {
+    margin: 10px auto 0px;
+    width: 98%;
+    height: 50px;
+    min-height: initial;
+    z-index: 2; /*保持悬浮在上层*/
+}
+
+/*
+    ========================
+    file_manage
+    ========================
+*
+
 /* file_manage */
 #file_manage {
     overflow-y: scroll;
-    /*height: -webkit-fill-available;*/
     height: 100%;
 }
 

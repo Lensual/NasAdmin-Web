@@ -1,4 +1,4 @@
-var apiUrl = "http://localhost:1337/api";     //!!要设计自动获取地址
+var apiUrl = "/api";     //!!要设计自动获取地址
 var token;
 var enableAutoLogin = true;
 

@@ -1,5 +1,5 @@
 //debug
-for (var i = 0; i < 3; i++) {
+for (var i = 0; i < 4; i++) {
     document.getElementById("file_manage").innerHTML +=
         document.getElementById("file_manage").innerHTML;
 }
