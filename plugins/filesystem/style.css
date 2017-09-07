@@ -45,6 +45,21 @@
         display: inline-block;
     }
 
+    .toolbar .toolbar-url {
+        display: inline-flex;
+        align-items: baseline;
+    }
+
+        .toolbar .toolbar-url > .mdl-button {
+            min-width: 16px;
+            padding: 0 2px;
+        }
+
+        .toolbar .toolbar-url > .toolbar-url-separator {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+        }
 /* file_manage_grid */
 #file_manage_grid {
     margin-top: 57px;
