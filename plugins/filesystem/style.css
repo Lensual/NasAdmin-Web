@@ -46,20 +46,20 @@
     }
 
     .toolbar .toolbar-url {
-        display: inline-flex;
-        align-items: baseline;
+        margin: 0 10px;
+        padding: 0px 0; /*默认20 与下面减相同数*/
     }
 
-        .toolbar .toolbar-url > .mdl-button {
-            min-width: 16px;
-            padding: 0 2px;
+        .toolbar .toolbar-url > .mdl-textfield__label {
+            top: 4px; /*默认24 与上面减相同数*/
         }
 
-        /*.toolbar .toolbar-url > .toolbar-url-separator {
-            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-            font-size: 14px;
-            font-weight: 500;
-        }*/
+        .toolbar .toolbar-url > .mdl-textfield__label::after {
+            top: 20px; /*bottom改为top定位*/
+        }
+
+
+
 /* file_manage_grid */
 #file_manage_grid {
     margin-top: 57px;
