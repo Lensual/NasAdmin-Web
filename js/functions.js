@@ -194,6 +194,8 @@ async function updateContents(target) {
             //replace Contents
             document.getElementById("contents").parentNode
                 .replaceChild(contents, document.getElementById("contents"));
+            //upgradeMdl
+            componentHandler.upgradeAllRegistered()
         });
 }
 
