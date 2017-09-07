@@ -26,7 +26,7 @@ window.onload = function () {
                                     .getAttribute("href").substr(1);
                                 updateContents(target)
                                     .then(function () {
-                                        updateTabs(target)
+                                        updateTabs(target);
                                         loadScript(target);
                                     });
                             });
@@ -38,7 +38,7 @@ window.onload = function () {
                     alert("Login XHR Error: " + xhr.status + " " + xhr.responseText);
                 }
             }
-        }
+        };
         xhr.open("POST", apiUrl + "/auth/login", true);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.send(
@@ -46,7 +46,7 @@ window.onload = function () {
             "username=" + encodeURIComponent(document.getElementById("username").value) + "&" +
             "password=" + encodeURIComponent(document.getElementById("password").value)
         );
-    }
+    };
 
     //registerNavOnclick
     registerNavOnclick();
@@ -63,21 +63,21 @@ window.onload = function () {
                 .then(function (result) {
                     var json = JSON.parse(result);
                     if (json.isSuccess) {
-                    //get permission
-                    var permission = getPermission();
-                    updateNavs(permission)
-                        .then(function () {
-                            registerNavOnclick();
-                            //updateContents
-                            var target = document.getElementById("navs")
-                                .getElementsByClassName("mdl-navigation__link")[0]
-                                .getAttribute("href").substr(1);
-                            updateContents(target)
-                                .then(function () {
-                                    updateTabs(target);
-                                    loadScript(target);
-                                });
-                        });
+                        //get permission
+                        var permission = getPermission();
+                        updateNavs(permission)
+                            .then(function () {
+                                registerNavOnclick();
+                                //updateContents
+                                var target = document.getElementById("navs")
+                                    .getElementsByClassName("mdl-navigation__link")[0]
+                                    .getAttribute("href").substr(1);
+                                updateContents(target)
+                                    .then(function () {
+                                        updateTabs(target);
+                                        loadScript(target);
+                                    });
+                            });
                     } else {
                         console.log("autoLogin Unsuccessful");
                     }
@@ -86,7 +86,7 @@ window.onload = function () {
     }
 
 
-}
+};
 
 //registerNavOnclick
 function registerNavOnclick() {
@@ -96,11 +96,11 @@ function registerNavOnclick() {
             e.preventDefault();
             updateContents(e.currentTarget.getAttribute("href").substr(1))
                 .then(function () {
-                    updateTabs(e.currentTarget.getAttribute("href").substr(1))
+                    updateTabs(e.currentTarget.getAttribute("href").substr(1));
                     loadScript(e.currentTarget.getAttribute("href").substr(1));
                 });
             document.getElementsByClassName("mdl-layout__drawer-button")[0].click();
-        }
+        };
     }
 }
 
@@ -195,7 +195,7 @@ async function updateContents(target) {
             document.getElementById("contents").parentNode
                 .replaceChild(contents, document.getElementById("contents"));
             //upgradeMdl
-            componentHandler.upgradeAllRegistered()
+            componentHandler.upgradeAllRegistered();
         });
 }
 
@@ -219,15 +219,15 @@ async function getHtml(url) {
 //getCookie
 function getCookie(c_name) {
     if (document.cookie.length > 0) {
-        c_start = document.cookie.indexOf(c_name + "=")
+        c_start = document.cookie.indexOf(c_name + "=");
         if (c_start != -1) {
-            c_start = c_start + c_name.length + 1
-            c_end = document.cookie.indexOf(";", c_start)
-            if (c_end == -1) c_end = document.cookie.length
-            return unescape(document.cookie.substring(c_start, c_end))
+            c_start = c_start + c_name.length + 1;
+            c_end = document.cookie.indexOf(";", c_start);
+            if (c_end == -1) c_end = document.cookie.length;
+            return unescape(document.cookie.substring(c_start, c_end));
         }
     }
-    return ""
+    return "";
 }
 
 //loadScript
