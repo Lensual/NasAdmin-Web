@@ -41,8 +41,10 @@
         text-align: initial;
     }
 
-    .toolbar div {
-        display: inline-block;
+    .toolbar > .mdl-card {
+        display: inline-flex;
+        flex-direction: row;
+        align-items: center;
     }
 
     .toolbar .toolbar-url {
