@@ -39,6 +39,7 @@
         min-height: initial;
         margin: 11px auto;
         text-align: initial;
+        overflow: visible;
     }
 
     .toolbar > .mdl-card {
@@ -47,18 +48,23 @@
         align-items: center;
     }
 
-    .toolbar .toolbar-url {
-        margin: 0 10px;
-        padding: 0px 0; /*默认20 与下面减相同数*/
-    }
-
-        .toolbar .toolbar-url > .mdl-textfield__label {
-            top: 4px; /*默认24 与上面减相同数*/
+        .toolbar > .mdl-card > div {
+            margin: 0 3px;
         }
 
-        .toolbar .toolbar-url > .mdl-textfield__label::after {
-            top: 20px; /*bottom改为top定位*/
+        .toolbar > .mdl-card > .toolbar-url {
+            margin-left: 20px;
+            padding: 0px 0; /*默认20 与下面减相同数*/
         }
+
+            .toolbar > .mdl-card > .toolbar-url > .mdl-textfield__label {
+                top: 4px; /*默认24 与上面减相同数*/
+            }
+
+                .toolbar > .mdl-card > .toolbar-url > .mdl-textfield__label::after {
+                    top: 20px; /*bottom改为top定位*/
+                }
+/* toolbar end */
 
 
 
@@ -140,3 +146,4 @@
     color: slategrey;
     display: block;
 }
+/* file_manage_grid end */
