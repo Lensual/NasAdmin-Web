@@ -1,95 +1,76 @@
 var apiUrl = "/api";     //!!要设计自动获取地址
-var token;
+window.token = "";
 var enableAutoLogin = true;
 
 window.onload = function () {
     //login
     document.getElementById("loginDialog_btnLogin").onclick = function () {
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4) {// 4 = "loaded"
-                if (xhr.status == 200) {// 200 = OK
-                    var json = JSON.parse(xhr.responseText);
-                    if (json.isSuccess) {
-                        //apply token
-                        token = json.token;
-                        //save token
-                        document.cookie = "token=" + escape(token);
-                        //get permission
-                        var permission = getPermission();
-                        updateNavs(permission)
-                            .then(function () {
-                                registerNavOnclick();
-                                //updateContents
-                                var target = document.getElementById("navs")
-                                    .getElementsByClassName("mdl-navigation__link")[0]
-                                    .getAttribute("href").substr(1);
-                                updateContents(target)
-                                    .then(function () {
-                                        updateTabs(target);
-                                        loadScript(target);
-                                    });
-                            });
-                    } else {
-                        alert("Login unsuccessful: " + xhr.status + " " + xhr.responseText);
-                    }
-                }
-                else {
-                    alert("Login XHR Error: " + xhr.status + " " + xhr.responseText);
-                }
-            }
-        };
-        xhr.open("POST", apiUrl + "/auth/login", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.send(
-            "grant_type=password&" +
+        var body = "grant_type=password&" +
             "username=" + encodeURIComponent(document.getElementById("username").value) + "&" +
-            "password=" + encodeURIComponent(document.getElementById("password").value)
-        );
+            "password=" + encodeURIComponent(document.getElementById("password").value);
+        httpPost(apiUrl + "/auth/token", body, window.token, function (xhr) {
+            if (xhr.status == 200) {// 200 = OK
+                var json = JSON.parse(xhr.responseText);
+                //apply token
+                token = json.token;
+                //save token
+                document.cookie = "token=" + escape(token);
+                //updateElements
+                afterLogin()
+            } else {
+                alert("Login unsuccessful: " + xhr.status + " " + xhr.responseText);
+            }
+        });
     };
 
     //registerNavOnclick
-    registerNavOnclick();
+    regNavOnclickEvent();
 
     //autoLogin
-    if (enableAutoLogin) {
-        autoLogin();
-    }
-    function autoLogin() {
-        token = getCookie("token");
-        if (token != "") {
-            //get sessionInfo
-            getHtml(apiUrl + "/auth/sessionInfo?token=" + token)
-                .then(function (result) {
-                    var json = JSON.parse(result);
-                    if (json.isSuccess) {
-                        //get permission
-                        var permission = getPermission();
-                        updateNavs(permission)
-                            .then(function () {
-                                registerNavOnclick();
-                                //updateContents
-                                var target = document.getElementById("navs")
-                                    .getElementsByClassName("mdl-navigation__link")[0]
-                                    .getAttribute("href").substr(1);
-                                updateContents(target)
-                                    .then(function () {
-                                        updateTabs(target);
-                                        loadScript(target);
-                                    });
-                            });
-                    } else {
-                        console.log("autoLogin Unsuccessful");
-                    }
-                });
-        }
-    }
-
-
+    if (enableAutoLogin) { autoLogin(); }
 };
 
-//registerNavOnclick
-function registerNavOnclick() {
+//autoLogin
+function autoLogin() {
+    windows.token = getCookie("token");
+    if (windows.token != "") {
+        //get sessionInfo
+        httpGet(apiUrl + "/auth/sessionInfo", windows.token, function (xhr) {
+            if (xhr.status == 200) {
+                var json = JSON.parse(xhr.responseText);
+                //updateElements
+                afterLogin()
+            } else {
+                console.info("autoLogin Unsuccessful");
+            }
+        });
+    }
+}
+
+//登录之后ajax更新与注册元素
+function afterLogin() {
+    //get permission
+    getPermission(function (permission) {
+        //updateNavs
+        updateNavs(permission, function () {
+            //regEvent
+            regNavOnclickEvent();
+            //updateContents
+            var target = document.getElementById("navs")
+                .getElementsByClassName("mdl-navigation__link")[0]
+                .getAttribute("href").substr(1);
+            updateContents(target, function () {
+                //updateTabs
+                updateTabs(target, function () {
+                    //loadScript
+                    loadScript(target);
+                });
+            });
+        });
+    });
+}
+
+function regNavOnclickEvent() {
     var nav = document.getElementsByClassName("mdl-navigation__link");
     for (var i = 0; i < nav.length; i++) {
         nav[i].onclick = function (e) {
@@ -105,70 +86,64 @@ function registerNavOnclick() {
 }
 
 //getPermission
-function getPermission() {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", apiUrl + "/auth/permission/?token=" + token, false);
-    xhr.send();
-    if (xhr.readyState == 4) {// 4 = "loaded"
+function getPermission(callback) {
+    httpGet(apiUrl + "/auth/permission", window.token, function (xhr) {
         if (xhr.status == 200) {// 200 = OK
             var json = JSON.parse(xhr.responseText);
-            if (json.isSuccess) {
-                return json;
-            } else {
-                alert("getPermission() Error: " + xhr.status + " " + xhr.responseText);
-            }
+            callback(json.permission);
         }
         else {
-            alert("getPermission() XHR Error: " + xhr.status + " " + xhr.responseText);
+            console.error("getPermission() Error: " + xhr.status + " " + xhr.responseText);
         }
-    }
+    });
 }
 
-//updateNavs
-async function updateNavs(permission) {
-    //sort
+//document update
+function updateNavs(permission, callback) {
+    //sort by priority
     permission.grant.sort(function (a, b) {
         return a.priority - b.priority;
     });
-    //async
-    var promises = [];
     var results = [];
     for (var i = 0; i < permission.grant.length; i++) {
-        promises.push(getHtml("./plugins/" + permission.grant[i].name + "/nav.html"));
+        httpGet("./plugins/" + permission.grant[i].name + "/nav.html", window.token, function (xhr) {
+            if (xhr.responseText == 200) {
+                results.push(xhr.responseText);
+                if (result.length == permission.grant.length) {
+                    //generate new Navs
+                    var navs = document.createElement("nav");
+                    navs.id = "navs";
+                    navs.className = "mdl-navigation";
+                    for (var i = 0; i < results.length; i++) {
+                        navs.innerHTML += results[i];
+                    }
+                    componentHandler.upgradeElement(navs);
+                    //replace Navs
+                    document.getElementById("navs").parentNode
+                        .replaceChild(navs, document.getElementById("navs"));
+                    //callback
+                    if (callback) {
+                        callback();
+                    }
+                }
+            }
+        });
     }
-    //await
-    for (var i = 0; i < promises.length; i++) {
-        results.push(await promises[i]);
-    }
-    //generate new Navs
-    var navs = document.createElement("nav");
-    navs.id = "navs";
-    navs.className = "mdl-navigation";
-    for (var i = 0; i < results.length; i++) {
-        navs.innerHTML += results[i];
-    }
-    componentHandler.upgradeElement(navs);
-    //replace Navs
-    document.getElementById("navs").parentNode
-        .replaceChild(navs, document.getElementById("navs"));
 }
-
-//updateTabs
-async function updateTabs(target) {
-    getHtml("./plugins/" + target + "/tabs.html")
-        .then(function (result) {
+function updateTabs(target, callback) {
+    httpGet("./plugins/" + target + "/tabs.html", window.token, function (xhr) {
+        if (xhr.status == 200) {
             //generate new Navs
             var tabs = document.createElement("div");
             tabs.id = "tabs";
             tabs.className = "mdl-layout__tab-bar mdl-js-ripple-effect";
-            tabs.innerHTML = result;
+            tabs.innerHTML = xhr.responseText;
             //replace Navs
             document.getElementById("tabs").parentNode
                 .replaceChild(tabs, document.getElementById("tabs"));
             //fix MaterialLayout.content_
             document.getElementById("layout").MaterialLayout.content_ =
                 document.getElementById("contents");
-
             for (var i = 0; i < tabs.children.length; i++) {
                 new MaterialLayoutTab(tabs.children[i],
                     tabs.children,
@@ -179,44 +154,68 @@ async function updateTabs(target) {
                     new MaterialRipple(ripple_containers[j]);
                 }
             }
-        });
+            //callback
+            if (callback) {
+                callback();
+            }
+        }
+    })
 }
-
-//updateContents
-async function updateContents(target) {
-    getHtml("./plugins/" + target + "/contents.html")
-        .then(function (result) {
+function updateContents(target, callback) {
+    httpGet("./plugins/" + target + "/contents.html", window.token, function (xhr) {
+        if (xhr.status == 200) {
             //generate new Contents
             var contents = document.createElement("main");
             contents.id = "contents";
             contents.className = "mdl-layout__content";
-            contents.innerHTML = result;
+            contents.innerHTML = xhr.responseText;
             //replace Contents
             document.getElementById("contents").parentNode
                 .replaceChild(contents, document.getElementById("contents"));
             //upgradeMdl
             componentHandler.upgradeAllRegistered();
-        });
-}
-
-//getHtml
-async function getHtml(url) {
-    return new Promise(function (resolve, reject) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", url, false);
-        xhr.send();
-        if (xhr.readyState == 4) {// 4 = "loaded"
-            if (xhr.status == 200) {// 200 = OK
-                resolve(xhr.responseText);
-            }
-            else {
-                reject("getHtml() XHR Error: " + xhr.status + " " + xhr.responseText);
+            //callback
+            if (callback) {
+                callback();
             }
         }
     });
 }
+function loadScript(url) {
+    var script = document.createElement('script');
+    script.src = url;
+    document.body.appendChild(script);
+}
 
-//getCookie
+//http
+function httpGet(url, token, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    if (token) {
+        xhr.setRequestHeader("token", token);
+    }
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState != 4) { return }
+        callback(xhr);
+    }
+    xhr.send();
+}
+
+function httpPost(url, body, token, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    if (token) {
+        xhr.setRequestHeader("token", token);
+    }
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState != 4) { return }
+        callback(xhr);
+    }
+    xhr.send(body);
+}
+
+//Cookie
 function getCookie(c_name) {
     if (document.cookie.length > 0) {
         c_start = document.cookie.indexOf(c_name + "=");
@@ -228,11 +227,4 @@ function getCookie(c_name) {
         }
     }
     return "";
-}
-
-//loadScript
-function loadScript(target) {
-    var script = document.createElement('script');
-    script.src = "./plugins/" + target + "/script.js";
-    document.body.appendChild(script);
 }
