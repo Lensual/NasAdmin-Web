@@ -3,7 +3,7 @@ window.token = "";
 var enableAutoLogin = true;
 
 window.onload = function () {
-    //login
+    //register Login Button
     document.getElementById("loginDialog_btnLogin").onclick = function () {
         var body = "grant_type=password&" +
             "username=" + encodeURIComponent(document.getElementById("username").value) + "&" +
@@ -55,17 +55,8 @@ function afterLogin() {
         updateNavs(permission, function () {
             //regEvent
             regNavOnclickEvent();
-            //updateContents
-            var target = document.getElementById("navs")
-                .getElementsByClassName("mdl-navigation__link")[0]
-                .getAttribute("href").substr(1);
-            updateContents(target, function () {
-                //updateTabs
-                updateTabs(target, function () {
-                    //loadScript
-                    loadScript(target);
-                });
-            });
+            //update contents & tabs
+            document.getElementsByClassName("mdl-navigation__link")[0].click();
         });
     });
 }
@@ -73,15 +64,24 @@ function afterLogin() {
 function regNavOnclickEvent() {
     var nav = document.getElementsByClassName("mdl-navigation__link");
     for (var i = 0; i < nav.length; i++) {
-        nav[i].onclick = function (e) {
-            e.preventDefault();
-            updateContents(e.currentTarget.getAttribute("href").substr(1))
-                .then(function () {
-                    updateTabs(e.currentTarget.getAttribute("href").substr(1));
-                    loadScript(e.currentTarget.getAttribute("href").substr(1));
-                });
-            document.getElementsByClassName("mdl-layout__drawer-button")[0].click();
-        };
+        nav[i].onclick = NavOnclick;
+    }
+}
+
+function NavOnclick(e) {
+    e.preventDefault();
+    var target = e.currentTarget.getAttribute("href").substr(1);
+    //updateContents
+    updateContents(target, function () {
+        //updateTabs
+        updateTabs(target, function () {
+            //loadScript
+            loadScript("./plugins/" + target + "/script.js");
+        });
+    });
+    //在抽屉打开的时候收回抽屉
+    if (document.getElementsByClassName("mdl-layout__drawer is-visible")[0]) {
+        document.getElementsByClassName("mdl-layout__drawer-button")[0].click();
     }
 }
 
@@ -107,9 +107,9 @@ function updateNavs(permission, callback) {
     var results = [];
     for (var i = 0; i < permission.grant.length; i++) {
         httpGet("./plugins/" + permission.grant[i].name + "/nav.html", window.token, function (xhr) {
-            if (xhr.responseText == 200) {
+            if (xhr.status == 200) {
                 results.push(xhr.responseText);
-                if (result.length == permission.grant.length) {
+                if (results.length == permission.grant.length) {
                     //generate new Navs
                     var navs = document.createElement("nav");
                     navs.id = "navs";
