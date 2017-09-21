@@ -32,10 +32,10 @@ window.onload = function () {
 
 //autoLogin
 function autoLogin() {
-    windows.token = getCookie("token");
-    if (windows.token != "") {
+    window.token = getCookie("token");
+    if (window.token != "") {
         //get sessionInfo
-        httpGet(apiUrl + "/auth/sessionInfo", windows.token, function (xhr) {
+        httpGet(apiUrl + "/auth/sessionInfo", window.token, function (xhr) {
             if (xhr.status == 200) {
                 var json = JSON.parse(xhr.responseText);
                 //updateElements
