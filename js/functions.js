@@ -8,7 +8,7 @@ window.onload = function () {
         var body = "grant_type=password&" +
             "username=" + encodeURIComponent(document.getElementById("username").value) + "&" +
             "password=" + encodeURIComponent(document.getElementById("password").value);
-        httpPost(apiUrl + "/auth/token", body, window.token, function (xhr) {
+        httpPost(apiUrl + "/token", body, window.token, function (xhr) {
             if (xhr.status == 200) {// 200 = OK
                 var json = JSON.parse(xhr.responseText);
                 //apply token
@@ -35,7 +35,7 @@ function autoLogin() {
     window.token = getCookie("token");
     if (window.token != "") {
         //get sessionInfo
-        httpGet(apiUrl + "/auth/sessionInfo", window.token, function (xhr) {
+        httpGet(apiUrl + "/sessionInfo", window.token, function (xhr) {
             if (xhr.status == 200) {
                 var json = JSON.parse(xhr.responseText);
                 //updateElements
@@ -87,7 +87,7 @@ function regNavOnclickEvent() {
 
 //getPermission
 function getPermission(callback) {
-    httpGet(apiUrl + "/auth/permission", window.token, function (xhr) {
+    httpGet(apiUrl + "/permission", window.token, function (xhr) {
         if (xhr.status == 200) {// 200 = OK
             var json = JSON.parse(xhr.responseText);
             callback(json.permission);
