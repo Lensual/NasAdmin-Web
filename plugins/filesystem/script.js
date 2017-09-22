@@ -16,7 +16,6 @@ function readDir(path) {
 }
 
 function waitforTask(taskId) {
-    //clearInterval(this);
     checkTask(taskId, function (result) {
         console.log(result);
         var json = JSON.parse(result);
@@ -24,7 +23,7 @@ function waitforTask(taskId) {
             var fmg = document.getElementById("file_manage_grid");
             fmg.innerHTML = "";
             for (var i = 0; i < json.Result.length; i++) {
-                var fileObj = fileObject(json.Result[i]);
+                var fileObj = fileObject(json.Result[i].name, getClassForFileType(json.Result[i].type));
                 fmg.appendChild(fileObj);
             }
         } else if (json.Status == "pending") {
@@ -41,17 +40,27 @@ function checkTask(taskId, callback) {
     });
 }
 
-function fileObject(fileName) {
+function getClassForFileType(type) {
+    switch (type) {
+        case "Directory":
+            return "folder";
+            break;
+        default:    //File
+            return "insert_drive_file";
+    }
+}
+
+function fileObject(fileName, fileType) {
     var fileObj = document.createElement("div");
     fileObj.className = "fileObject mdl-cell mdl-cell--2-col";
-    fileObj.appendChild(fileObject_mdlCard(fileName));
+    fileObj.appendChild(fileObject_mdlCard(fileName, fileType));
     componentHandler.upgradeElement(fileObj);
     return fileObj;
 
-    function fileObject_mdlCard(fileName) {
+    function fileObject_mdlCard(fileName, fileType) {
         var mdlCard = document.createElement("div");
-        mdlCard.className = "insert_drive_file mdl-card mdl-shadow--2dp";
-        mdlCard.appendChild(mdlCard__title());
+        mdlCard.className = fileType + " mdl-card mdl-shadow--2dp";
+        mdlCard.appendChild(mdlCard__title(fileType));
         mdlCard.appendChild(mdlCard__actions(fileName));
         componentHandler.upgradeElement(mdlCard);
         return mdlCard;
@@ -59,7 +68,7 @@ function fileObject(fileName) {
         function mdlCard__title() {
             var title = document.createElement("div");
             title.className = "mdl-card__title mdl-card--expand";
-            title.innerHTML = '<i class="material-icons">insert_drive_file</i>';
+            title.innerHTML = '<i class="material-icons">' + fileType + '</i>';
             componentHandler.upgradeElement(title);
             return title;
         }
