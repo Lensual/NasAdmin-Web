@@ -4,7 +4,7 @@ for (var i = 0; i < 4; i++) {
         document.getElementById("file_manage_grid").innerHTML;
 }
 
-readDir("c:\\");
+//readDir("c:\\");
 
 function readDir(path) {
     httpGet(apiUrl + "/fs/readDir/?path=" + path, window.token, function (xhr) {

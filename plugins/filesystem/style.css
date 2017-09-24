@@ -107,6 +107,14 @@
         display: block;
     }
 
+.fileObject > .mdl-card > .mdl-checkbox {
+    position: absolute;
+    width: auto;
+    height: auto;
+    left: 5px;
+    top: 2px;
+}
+
 /* folder */
 .folder > .mdl-card__title > .material-icons {
     font-size: 5em;
