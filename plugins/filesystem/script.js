@@ -1,13 +1,11 @@
 //debug
 for (var i = 0; i < 4; i++) {
-    document.getElementById("file_manage_grid").innerHTML +=
-        document.getElementById("file_manage_grid").innerHTML;
-}
-
-//register checkboxs event
-var checkboxs = document.getElementsByClassName("fileCheckBox");
-for (var i = 0; i < checkboxs.length; i++) {
-    new MaterialCheckbox(checkboxs[i]);
+    var fmg = document.getElementById("file_manage_grid");
+    fmg.appendChild(fileObject("folder", "folder"));
+    fmg.appendChild(fileObject("insert_drive_file", "insert_drive_file"));
+    fmg.appendChild(fileObject("folder_open", "folder_open"));
+    fmg.appendChild(fileObject("movie", "movie"));
+    fmg.appendChild(fileObject("album", "album"));
 }
 
 //readDir("c:\\");
@@ -85,17 +83,16 @@ function fileObject(fileName, fileType) {
     function fileObject_mdlCard(fileName, fileType) {
         var mdlCard = document.createElement("div");
         mdlCard.className = fileType + " mdl-card mdl-shadow--2dp";
+        mdlCard.appendChild(fileCheckBox());
         mdlCard.appendChild(mdlCard__title(fileType));
         mdlCard.appendChild(mdlCard__actions(fileName));
         componentHandler.upgradeElement(mdlCard);
         return mdlCard;
 
         function fileCheckBox() {
-            //register checkboxs event
-            var checkbox = document.createElement("labal");
+            var checkbox = document.createElement("label");
             checkbox.className = "fileCheckBox mdl-checkbox mdl-js-checkbox";
             checkbox.innerHTML = '<input type="checkbox" class="mdl-checkbox__input">';
-            new MaterialCheckbox(checkbox);
             componentHandler.upgradeElement(checkbox);
             return checkbox;
         }
