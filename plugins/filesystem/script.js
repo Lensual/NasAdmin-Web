@@ -1,5 +1,5 @@
 //debug
-for (var i = 0; i < 4; i++) {
+for (var i = 0; i < 10; i++) {
     var fmg = document.getElementById("file_manage_grid");
     fmg.appendChild(fileObject("folder", "folder"));
     fmg.appendChild(fileObject("insert_drive_file", "insert_drive_file"));
@@ -86,6 +86,14 @@ function fileObject(fileName, fileType) {
         mdlCard.appendChild(fileCheckBox());
         mdlCard.appendChild(mdlCard__title(fileType));
         mdlCard.appendChild(mdlCard__actions(fileName));
+        mdlCard.onclick = function (e) {
+            if (e.srcElement == e.currentTarget.getElementsByClassName("mdl-checkbox__input")[0]) {
+                return;
+            }
+            e.preventDefault();
+            e.currentTarget.getElementsByClassName("mdl-checkbox__input")[0].click();
+            console.log(e);
+        };
         componentHandler.upgradeElement(mdlCard);
         return mdlCard;
 
