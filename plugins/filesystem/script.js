@@ -4,6 +4,12 @@ for (var i = 0; i < 4; i++) {
         document.getElementById("file_manage_grid").innerHTML;
 }
 
+//register checkboxs event
+var checkboxs = document.getElementsByClassName("fileCheckBox");
+for (var i = 0; i < checkboxs.length; i++) {
+    new MaterialCheckbox(checkboxs[i]);
+}
+
 //readDir("c:\\");
 
 function readDir(path) {

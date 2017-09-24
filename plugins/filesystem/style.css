@@ -115,6 +115,10 @@
     top: 2px;
 }
 
+    .fileObject > .mdl-card > .mdl-checkbox > .mdl-checkbox__box-outline {
+        border: 2px solid #757575;
+    }
+
 /* folder */
 .folder > .mdl-card__title > .material-icons {
     font-size: 5em;
