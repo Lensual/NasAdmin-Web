@@ -46,7 +46,7 @@ function waitforTask(taskId) {
                     swap = null;
                 }
             }
-            //遍历
+            //遍历 生成元素
             for (var i = 0; i < json.Result.length; i++) {
                 var fileObj = fileObject(json.Result[i].name, getClassForFileType(json.Result[i].type));
                 fmg.appendChild(fileObj);
@@ -89,6 +89,16 @@ function fileObject(fileName, fileType) {
         mdlCard.appendChild(mdlCard__actions(fileName));
         componentHandler.upgradeElement(mdlCard);
         return mdlCard;
+
+        function fileCheckBox() {
+            //register checkboxs event
+            var checkbox = document.createElement("labal");
+            checkbox.className = "fileCheckBox mdl-checkbox mdl-js-checkbox";
+            checkbox.innerHTML = '<input type="checkbox" class="mdl-checkbox__input">';
+            new MaterialCheckbox(checkbox);
+            componentHandler.upgradeElement(checkbox);
+            return checkbox;
+        }
 
         function mdlCard__title() {
             var title = document.createElement("div");
