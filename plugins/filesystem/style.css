@@ -80,6 +80,7 @@
     height: 100%;
     min-height: initial;
     /*background: url('../assets/demos/image_card.jpg') center / cover;*/
+    cursor: default;
 }
 
 .fileObject .mdl-card__title {
