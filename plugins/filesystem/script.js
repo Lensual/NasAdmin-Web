@@ -22,6 +22,25 @@ function waitforTask(taskId) {
         if (json.Status == "fulfilled") {
             var fmg = document.getElementById("file_manage_grid");
             fmg.innerHTML = "";
+            //排序 文件夹靠前
+            var swap;
+            for (var i = 0; i < json.Result.length; i++) {
+                if (json.Result[i] &&
+                    json.Result[i].type != "Directory" &&
+                    json.Result[i + 1] &&
+                    json.Result[i + 1].type == "Directory") {
+                    //swap
+                    swap = json.Result[i];
+                    json.Result[i] = json.Result[i + 1];
+                    json.Result[i + 1] = swap;
+                }
+                //最后一个并且本轮交换过
+                if (i == json.Result.length -1 && swap) {
+                    i = -1; //reset
+                    swap = null;
+                }
+            }
+            //遍历
             for (var i = 0; i < json.Result.length; i++) {
                 var fileObj = fileObject(json.Result[i].name, getClassForFileType(json.Result[i].type));
                 fmg.appendChild(fileObj);
