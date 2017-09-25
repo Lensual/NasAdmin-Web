@@ -86,16 +86,18 @@ function fileObject(fileName, fileType) {
         mdlCard.appendChild(fileCheckBox());
         mdlCard.appendChild(mdlCard__title(fileType));
         mdlCard.appendChild(mdlCard__actions(fileName));
-        mdlCard.onclick = function (e) {
+        mdlCard.onclick = mdlCard_onclick;
+        componentHandler.upgradeElement(mdlCard);
+        return mdlCard;
+
+        function mdlCard_onclick(e) {
             if (e.srcElement == e.currentTarget.getElementsByClassName("mdl-checkbox__input")[0]) {
                 return;
             }
             e.preventDefault();
             e.currentTarget.getElementsByClassName("mdl-checkbox__input")[0].click();
             console.log(e);
-        };
-        componentHandler.upgradeElement(mdlCard);
-        return mdlCard;
+        }
 
         function fileCheckBox() {
             var checkbox = document.createElement("label");
