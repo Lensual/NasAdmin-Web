@@ -8,54 +8,60 @@ for (var i = 0; i < 10; i++) {
     fmg.appendChild(fileObject("album", "album"));
 }
 
-//readDir("c:\\");
+readDir("c:\\");
 
 function readDir(path) {
     httpGet(apiUrl + "/fs/readDir/?path=" + path, window.token, function (xhr) {
         if (xhr.status == 202) {
             var json = JSON.parse(xhr.responseText);
-            setTimeout(waitforTask, 1000, json.TaskId);
+            waitforTask(json.TaskId, 1000, function (json) {
+                var fmg = document.getElementById("file_manage_grid");
+                fmg.innerHTML = "";
+                //排序 文件夹靠前
+                var swap;
+                for (var i = 0; i < json.Result.length; i++) {
+                    if (json.Result[i] &&
+                        json.Result[i].type != "Directory" &&
+                        json.Result[i + 1] &&
+                        json.Result[i + 1].type == "Directory") {
+                        //swap
+                        swap = json.Result[i];
+                        json.Result[i] = json.Result[i + 1];
+                        json.Result[i + 1] = swap;
+                    }
+                    //最后一个并且本轮交换过
+                    if (i == json.Result.length - 1 && swap) {
+                        i = -1; //reset
+                        swap = null;
+                    }
+                }
+                //遍历 生成元素
+                for (var i = 0; i < json.Result.length; i++) {
+                    var fileObj = fileObject(json.Result[i].name, getClassForFileType(json.Result[i].type));
+                    fmg.appendChild(fileObj);
+                }
+                //update path
+                fmg.setAttribute("data-path",path )
+            });
         }
     });
 }
 
-function waitforTask(taskId) {
-    checkTask(taskId, function (result) {
+function waitforTask(taskId, delay, callback) {
+    setTimeout(checkTask,delay,[taskId, function (result) {
         console.log(result);
         var json = JSON.parse(result);
         if (json.Status == "fulfilled") {
-            var fmg = document.getElementById("file_manage_grid");
-            fmg.innerHTML = "";
-            //排序 文件夹靠前
-            var swap;
-            for (var i = 0; i < json.Result.length; i++) {
-                if (json.Result[i] &&
-                    json.Result[i].type != "Directory" &&
-                    json.Result[i + 1] &&
-                    json.Result[i + 1].type == "Directory") {
-                    //swap
-                    swap = json.Result[i];
-                    json.Result[i] = json.Result[i + 1];
-                    json.Result[i + 1] = swap;
-                }
-                //最后一个并且本轮交换过
-                if (i == json.Result.length -1 && swap) {
-                    i = -1; //reset
-                    swap = null;
-                }
-            }
-            //遍历 生成元素
-            for (var i = 0; i < json.Result.length; i++) {
-                var fileObj = fileObject(json.Result[i].name, getClassForFileType(json.Result[i].type));
-                fmg.appendChild(fileObj);
-            }
+            callback(json);
         } else if (json.Status == "pending") {
             setTimeout(waitforTask, 1000, json.TaskId);
         }
-    });
+    }]);
 }
 
-function checkTask(taskId, callback) {
+function checkTask(args) {
+    var taskId = args[0];
+    var callback = args[1];
     httpGet(apiUrl + "/taskqueue/check/" + taskId, window.token, function (xhr) {
         if (xhr.status == 200) {
             callback(xhr.responseText);
@@ -94,9 +100,10 @@ function fileObject(fileName, fileType) {
             if (e.srcElement == e.currentTarget.getElementsByClassName("mdl-checkbox__input")[0]) {
                 return;
             }
-            e.preventDefault();
-            e.currentTarget.getElementsByClassName("mdl-checkbox__input")[0].click();
-            console.log(e);
+            var fileName = e.currentTarget.getElementsByClassName("file_filename")[0].textContent;
+            var path = document.getElementById("file_manage_grid").getAttribute("data-path");
+            readDir(path + "/" + fileName);
+            console.log(path + "/" + fileName);
         }
 
         function fileCheckBox() {
