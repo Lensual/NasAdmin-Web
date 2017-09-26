@@ -13,7 +13,42 @@ for (var i = 0; i < 10; i++) {
     fmg.appendChild(fileObject("album", "album"));
 }
 
-readDir("/");
+readDirSync("/");
+
+function readDirSync(path) {
+    httpGet(apiUrl + "/fs/readDirSync/?path=" + path, window.token, function (xhr) {
+        if (xhr.status == 200) {
+            console.log(xhr.responseText);
+            var json = JSON.parse(xhr.responseText);
+            fmg.innerHTML = "";
+            //排序 文件夹靠前
+            var swap;
+            for (var i = 0; i < json.files.length; i++) {
+                if (json.files[i] &&
+                    json.files[i].type != "Directory" &&
+                    json.files[i + 1] &&
+                    json.files[i + 1].type == "Directory") {
+                    //swap
+                    swap = json.files[i];
+                    json.files[i] = json.files[i + 1];
+                    json.files[i + 1] = swap;
+                }
+                //最后一个并且本轮交换过
+                if (i == json.files.length - 1 && swap) {
+                    i = -1; //reset
+                    swap = null;
+                }
+            }
+            //遍历 生成元素
+            for (var i = 0; i < json.files.length; i++) {
+                var fileObj = fileObject(json.files[i].name, getClassForFileType(json.files[i].type));
+                fmg.appendChild(fileObj);
+            }
+            //update path
+            fmg.setAttribute("data-path", path);
+        }
+    });
+}
 
 function readDir(path) {
     httpGet(apiUrl + "/fs/readDir/?path=" + path, window.token, function (xhr) {
@@ -45,14 +80,14 @@ function readDir(path) {
                     fmg.appendChild(fileObj);
                 }
                 //update path
-                fmg.setAttribute("data-path",path )
+                fmg.setAttribute("data-path", path)
             });
         }
     });
 }
 
 function waitforTask(taskId, delay, callback) {
-    setTimeout(checkTask,delay,[taskId, function (result) {
+    setTimeout(checkTask, delay, [taskId, function (result) {
         console.log(result);
         var json = JSON.parse(result);
         if (json.Status == "fulfilled") {
@@ -106,8 +141,8 @@ function fileObject(fileName, fileType) {
             }
             var fileName = e.currentTarget.getElementsByClassName("file_filename")[0].textContent;
             var path = document.getElementById("file_manage_grid").getAttribute("data-path");
-            readDir(path + "/" + fileName);
-            console.log(path + "/" + fileName);
+            readDirSync(normalizePath(path + "/" + fileName));
+            console.log(normalizePath(path + "/" + fileName));
         }
 
         function fileCheckBox() {
@@ -134,4 +169,22 @@ function fileObject(fileName, fileType) {
             return actions;
         }
     }
+}
+
+function normalizePath(path) {
+    for (var i = 0; i < path.length; i++) {
+        if (i == path.length - 1) { continue }
+        var word = path.substr(i, 2);
+        switch (word) {
+            case "\\":
+                return normalizePath(path.replace(/\\/g, "/"));
+            case "\\\\":
+                return normalizePath(path.replace(/\\\\/g, "/"));
+            case "//":
+                return normalizePath(path.replace(/\/\//g, "/"));
+            default:
+                continue;
+        }
+    }
+    return path;
 }
