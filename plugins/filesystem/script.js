@@ -1,9 +1,23 @@
 var fmg = document.getElementById("file_manage_grid");
 var toolbarUrl_input = document.getElementById("toolbar-url_input");
+var fmg_navHistory_before = [];
+var fmg_navHistory_next = [];
+
 //register event
-//fmg.addEventListener('DOMAttrModified', function (e) {
-//    console.log(e);
-//});
+document.getElementById("btn_navigate_before").onclick = function (e) {
+    var path = fmg_navHistory_before.pop();
+    if (path) {
+        fmg_navHistory_next.push(fmg.getAttribute("data-path"));
+        readDirSync(path, false);
+    }
+}
+document.getElementById("btn_navigate_next").onclick = function (e) {
+    var path = fmg_navHistory_next.pop();
+    if (path) {
+        fmg_navHistory_before.push(fmg.getAttribute("data-path"));
+        readDirSync(path, false);
+    }
+}
 
 //debug
 for (var i = 0; i < 10; i++) {
@@ -14,30 +28,30 @@ for (var i = 0; i < 10; i++) {
     fmg.appendChild(fileObject("album", "album"));
 }
 
-readDirSync("/");
+readDirSync("/", false);
 
-function readDirSync(path) {
+function readDirSync(path, recHistory) {
     httpGet(apiUrl + "/fs/readDirSync/?path=" + path, window.token, function (xhr) {
         if (xhr.status == 200) {
             console.log(xhr.responseText);
             var json = JSON.parse(xhr.responseText);
-            afterReadDir(json.files, path);
+            afterReadDir(json.files, path, recHistory);
         }
     });
 }
 
-function readDir(path) {
+function readDir(path, recHistory) {
     httpGet(apiUrl + "/fs/readDir/?path=" + path, window.token, function (xhr) {
         if (xhr.status == 202) {
             var json = JSON.parse(xhr.responseText);
             waitforTask(json.TaskId, 1000, function (task) {
-                afterReadDir(task.Result, path);
+                afterReadDir(task.Result, path, recHistory);
             });
         }
     });
 }
 
-function afterReadDir(files, path) {
+function afterReadDir(files, path, recHistory) {
     fmg.innerHTML = "";
     //ÅÅÐò ÎÄ¼þ¼Ð¿¿Ç°
     var swap;
@@ -62,9 +76,15 @@ function afterReadDir(files, path) {
         var fileObj = fileObject(files[i].name, getClassForFileType(files[i].type));
         fmg.appendChild(fileObj);
     }
+    //recode history
+    if (recHistory) {
+        fmg_navHistory_before.push(fmg.getAttribute("data-path"));
+        fmg_navHistory_next.splice(0, fmg_navHistory_next.length);  //clear
+    }
     //update path
     fmg.setAttribute("data-path", path);
     toolbarUrl_input.value = path;
+
 }
 
 function waitforTask(taskId, delay, callback) {
@@ -122,7 +142,7 @@ function fileObject(fileName, fileType) {
             }
             var fileName = e.currentTarget.getElementsByClassName("file_filename")[0].textContent;
             var path = document.getElementById("file_manage_grid").getAttribute("data-path");
-            readDirSync(normalizePath(path + "/" + fileName));
+            readDirSync(normalizePath(path + "/" + fileName), true);
             console.log(normalizePath(path + "/" + fileName));
         }
 
