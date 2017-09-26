@@ -1,9 +1,9 @@
 var fmg = document.getElementById("file_manage_grid");
 var toolbarUrl_input = document.getElementById("toolbar-url_input");
 //register event
-fmg.addEventListener('DOMAttrModified', function (e) {
-    console.log(e);
-});
+//fmg.addEventListener('DOMAttrModified', function (e) {
+//    console.log(e);
+//});
 
 //debug
 for (var i = 0; i < 10; i++) {
@@ -19,6 +19,7 @@ readDirSync("/");
 function readDirSync(path) {
     httpGet(apiUrl + "/fs/readDirSync/?path=" + path, window.token, function (xhr) {
         if (xhr.status == 200) {
+            console.log(xhr.responseText);
             var json = JSON.parse(xhr.responseText);
             afterReadDir(json.files, path);
         }
