@@ -1,6 +1,11 @@
+var fmg = document.getElementById("file_manage_grid");
+//register event
+fmg.addEventListener('DOMAttrModified', function (e) {
+    console.log(e);
+});
+
 //debug
 for (var i = 0; i < 10; i++) {
-    var fmg = document.getElementById("file_manage_grid");
     fmg.appendChild(fileObject("folder", "folder"));
     fmg.appendChild(fileObject("insert_drive_file", "insert_drive_file"));
     fmg.appendChild(fileObject("folder_open", "folder_open"));
@@ -8,14 +13,13 @@ for (var i = 0; i < 10; i++) {
     fmg.appendChild(fileObject("album", "album"));
 }
 
-readDir("c:\\");
+readDir("/");
 
 function readDir(path) {
     httpGet(apiUrl + "/fs/readDir/?path=" + path, window.token, function (xhr) {
         if (xhr.status == 202) {
             var json = JSON.parse(xhr.responseText);
             waitforTask(json.TaskId, 1000, function (json) {
-                var fmg = document.getElementById("file_manage_grid");
                 fmg.innerHTML = "";
                 //ÅÅÐò ÎÄ¼þ¼Ð¿¿Ç°
                 var swap;
