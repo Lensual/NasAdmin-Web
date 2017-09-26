@@ -130,8 +130,13 @@ function fileObject(fileName, fileType) {
             var checkbox = document.createElement("label");
             checkbox.className = "fileCheckBox mdl-checkbox mdl-js-checkbox";
             checkbox.innerHTML = '<input type="checkbox" class="mdl-checkbox__input">';
+            checkbox.onclick = fileCheckBox_onclick;
             componentHandler.upgradeElement(checkbox);
             return checkbox;
+
+            function fileCheckBox_onclick(e) {
+                e.stopPropagation();
+            }
         }
 
         function mdlCard__title() {
