@@ -1,4 +1,5 @@
 var fmg = document.getElementById("file_manage_grid");
+var toolbarUrl_input = document.getElementById("toolbar-url_input");
 //register event
 fmg.addEventListener('DOMAttrModified', function (e) {
     console.log(e);
@@ -18,34 +19,8 @@ readDirSync("/");
 function readDirSync(path) {
     httpGet(apiUrl + "/fs/readDirSync/?path=" + path, window.token, function (xhr) {
         if (xhr.status == 200) {
-            console.log(xhr.responseText);
             var json = JSON.parse(xhr.responseText);
-            fmg.innerHTML = "";
-            //排序 文件夹靠前
-            var swap;
-            for (var i = 0; i < json.files.length; i++) {
-                if (json.files[i] &&
-                    json.files[i].type != "Directory" &&
-                    json.files[i + 1] &&
-                    json.files[i + 1].type == "Directory") {
-                    //swap
-                    swap = json.files[i];
-                    json.files[i] = json.files[i + 1];
-                    json.files[i + 1] = swap;
-                }
-                //最后一个并且本轮交换过
-                if (i == json.files.length - 1 && swap) {
-                    i = -1; //reset
-                    swap = null;
-                }
-            }
-            //遍历 生成元素
-            for (var i = 0; i < json.files.length; i++) {
-                var fileObj = fileObject(json.files[i].name, getClassForFileType(json.files[i].type));
-                fmg.appendChild(fileObj);
-            }
-            //update path
-            fmg.setAttribute("data-path", path);
+            afterReadDir(json.files, path);
         }
     });
 }
@@ -54,46 +29,51 @@ function readDir(path) {
     httpGet(apiUrl + "/fs/readDir/?path=" + path, window.token, function (xhr) {
         if (xhr.status == 202) {
             var json = JSON.parse(xhr.responseText);
-            waitforTask(json.TaskId, 1000, function (json) {
-                fmg.innerHTML = "";
-                //排序 文件夹靠前
-                var swap;
-                for (var i = 0; i < json.Result.length; i++) {
-                    if (json.Result[i] &&
-                        json.Result[i].type != "Directory" &&
-                        json.Result[i + 1] &&
-                        json.Result[i + 1].type == "Directory") {
-                        //swap
-                        swap = json.Result[i];
-                        json.Result[i] = json.Result[i + 1];
-                        json.Result[i + 1] = swap;
-                    }
-                    //最后一个并且本轮交换过
-                    if (i == json.Result.length - 1 && swap) {
-                        i = -1; //reset
-                        swap = null;
-                    }
-                }
-                //遍历 生成元素
-                for (var i = 0; i < json.Result.length; i++) {
-                    var fileObj = fileObject(json.Result[i].name, getClassForFileType(json.Result[i].type));
-                    fmg.appendChild(fileObj);
-                }
-                //update path
-                fmg.setAttribute("data-path", path)
+            waitforTask(json.TaskId, 1000, function (task) {
+                afterReadDir(task.Result, path);
             });
         }
     });
 }
 
+function afterReadDir(files, path) {
+    fmg.innerHTML = "";
+    //排序 文件夹靠前
+    var swap;
+    for (var i = 0; i < files.length; i++) {
+        if (files[i] &&
+            files[i].type != "Directory" &&
+            files[i + 1] &&
+            files[i + 1].type == "Directory") {
+            //swap
+            swap = files[i];
+            files[i] = files[i + 1];
+            files[i + 1] = swap;
+        }
+        //最后一个并且本轮交换过
+        if (i == files.length - 1 && swap) {
+            i = -1; //reset
+            swap = null;
+        }
+    }
+    //遍历 生成元素
+    for (var i = 0; i < files.length; i++) {
+        var fileObj = fileObject(files[i].name, getClassForFileType(files[i].type));
+        fmg.appendChild(fileObj);
+    }
+    //update path
+    fmg.setAttribute("data-path", path);
+    toolbarUrl_input.value = path;
+}
+
 function waitforTask(taskId, delay, callback) {
     setTimeout(checkTask, delay, [taskId, function (result) {
         console.log(result);
-        var json = JSON.parse(result);
-        if (json.Status == "fulfilled") {
-            callback(json);
-        } else if (json.Status == "pending") {
-            setTimeout(waitforTask, 1000, json.TaskId);
+        var task = JSON.parse(result);
+        if (task.Status == "fulfilled") {
+            callback(task);
+        } else if (task.Status == "pending") {
+            waitforTask(taskId, delay, callback)
         }
     }]);
 }
