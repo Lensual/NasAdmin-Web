@@ -18,7 +18,6 @@ document.getElementById("btn_navigate_next").onclick = function (e) {
         readDirSync(path, false);
     }
 }
-
 //debug
 for (var i = 0; i < 10; i++) {
     fmg.appendChild(fileObject("folder", "folder"));
@@ -51,7 +50,7 @@ function readDir(path, recHistory) {
     });
 }
 
-function afterReadDir(files, path, recHistory) {
+function afterReadDir(files, path, recHistory)   {
     fmg.innerHTML = "";
     //ÅÅÐò ÎÄ¼þ¼Ð¿¿Ç°
     var swap;
@@ -137,9 +136,6 @@ function fileObject(fileName, fileType) {
         return mdlCard;
 
         function mdlCard_onclick(e) {
-            if (e.srcElement == e.currentTarget.getElementsByClassName("mdl-checkbox__input")[0]) {
-                return;
-            }
             var fileName = e.currentTarget.getElementsByClassName("file_filename")[0].textContent;
             var path = document.getElementById("file_manage_grid").getAttribute("data-path");
             readDirSync(normalizePath(path + "/" + fileName), true);
