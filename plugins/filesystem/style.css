@@ -74,6 +74,16 @@
     margin-top: 57px;
 }
 
+    #file_manage_grid > .fmg_Selected {
+        position: absolute;
+        background-color: blue;
+        opacity: 0.3;
+        border: 1px dashed #d9d9d9;
+        top: 0;
+        left: 0;
+        z-index: 10;
+    }
+
 /* fileObject */
 .fileObject > .mdl-card {
     width: 100%;

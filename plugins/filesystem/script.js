@@ -18,6 +18,86 @@ document.getElementById("btn_navigate_next").onclick = function (e) {
         readDirSync(path, false);
     }
 }
+fmg.onmousedown = function (p1) {
+    p1.preventDefault();
+    p1.stopPropagation();
+    var fmg_Selected = document.createElement("div");
+    fmg_Selected.className = "fmg_Selected";
+    fmg.appendChild(fmg_Selected);
+
+    fmg.onmousemove = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+
+        if (e.offsetX < p1.offsetX) {   //left
+            fmg_Selected.style.left = e.offsetX + fmg.offsetLeft + 'px';
+        } else {
+            fmg_Selected.style.left = p1.offsetX + fmg.offsetLeft + 'px';
+        }
+        fmg_Selected.style.width = Math.abs(e.offsetX - p1.offsetX) + 'px';
+        if (e.offsetY < p1.offsetY) { //up
+            fmg_Selected.style.top = e.offsetY + fmg.offsetTop + 'px';
+        } else {
+            fmg_Selected.style.top = p1.offsetY + fmg.offsetTop + 'px';
+        }
+        fmg_Selected.style.height = Math.abs(e.offsetY - p1.offsetY) + 'px';
+    }
+
+    function createSelected(x, y, w, h) {
+        var fmg_Selected = document.createElement("div");
+        fmg_Selected.className = "fmg_Selected";
+        fmg_Selected.style.left = x + 'px';
+        fmg_Selected.style.top = y + 'px';
+        fmg_Selected.style.width = w + 'px';
+        fmg_Selected.style.height = h + 'px';
+        fmg.appendChild(fmg_Selected);
+    }
+
+    fmg.onmouseup = function (p2) {
+        p2.preventDefault();
+        p2.stopPropagation();
+        var fileObj = document.getElementsByClassName("fileObject");
+        for (var i = 0; i < fileObj.length; i++) {
+            if (
+                (
+                    //左边缘 x轴在p1与p2的之间
+                    (fileObj[i].offsetLeft > p1.clientX && fileObj[i].offsetLeft < p2.clientX) ||
+                    (fileObj[i].offsetLeft < p1.clientX && fileObj[i].offsetLeft > p2.clientX) ||
+                    //右边缘 x轴在p1与p2的之间
+                    (fileObj[i].offsetLeft + fileObj[i].offsetWidth > p1.clientX &&
+                        fileObj[i].offsetLeft + fileObj[i].offsetWidth < p2.clientX) ||
+                    (fileObj[i].offsetLeft + fileObj[i].offsetWidth < p1.clientX &&
+                        fileObj[i].offsetLeft + fileObj[i].offsetWidth > p2.clientX)
+                ) && (
+                    //上边缘 y轴在p1与p2的之间
+                    (fileObj[i].offsetTop > p1.clientY && fileObj[i].offsetTop < p2.clientY) ||
+                    (fileObj[i].offsetTop < p1.clientY && fileObj[i].offsetTop > p2.clientY) ||
+                    //下边缘 y轴在p1与p2的之间
+                    (fileObj[i].offsetTop + fileObj[i].offsetHeight > p1.clientY &&
+                        fileObj[i].offsetTop + fileObj[i].offsetHeight < p2.clientY) ||
+                    (fileObj[i].offsetTop + fileObj[i].offsetHeight < p1.clientY &&
+                        fileObj[i].offsetTop + fileObj[i].offsetHeight > p2.clientY)
+                )
+            ) {
+                //if (true) {
+                fileObj[i].getElementsByClassName("mdl-checkbox__input")[0].click();
+                createSelected(fileObj[i].offsetLeft,
+                    fileObj[i].offsetTop + 112,
+                    fileObj[i].offsetWidth,
+                    fileObj[i].offsetHeight);
+                console.log(fileObj[i]);
+            }
+        }
+        //clear
+        //fmg_Selected.parentElement.removeChild(fmg_Selected);
+        fmg_Selected = null;
+        fmg.onmousemove = null;
+        fmg.onmouseup = null;
+    }
+}
+
+
 //debug
 for (var i = 0; i < 10; i++) {
     fmg.appendChild(fileObject("folder", "folder"));
@@ -50,8 +130,7 @@ function readDir(path, recHistory) {
     });
 }
 
-function afterReadDir(files, path, recHistory)   {
-    fmg.innerHTML = "";
+function afterReadDir(files, path, recHistory) {
     //排序 文件夹靠前
     var swap;
     for (var i = 0; i < files.length; i++) {
@@ -70,6 +149,7 @@ function afterReadDir(files, path, recHistory)   {
             swap = null;
         }
     }
+    fmg.innerHTML = "";
     //遍历 生成元素
     for (var i = 0; i < files.length; i++) {
         var fileObj = fileObject(files[i].name, getClassForFileType(files[i].type));
