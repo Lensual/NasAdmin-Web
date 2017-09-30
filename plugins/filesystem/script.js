@@ -24,14 +24,22 @@ fmg.onmousedown = function (p1) {
     //xy
     var p1x = p1.pageX;
     var p1y = p1.pageY - document.getElementById("contents").offsetTop;
-    //create element
-    var fmg_Selected = createSelected(0, 0, 0, 0);
+    //element
+    var fmg_Selected;
     //event
     fmg.onmousemove = function (e) {
-        e.preventDefault();
-        e.stopPropagation();
         var x = e.pageX;
         var y = e.pageY - document.getElementById("contents").offsetTop;
+        //忽略鼠标抖动
+        if (!fmg_Selected) {
+            if ((Math.abs(p1x - x) < 3 || Math.abs(p1y - y) < 3)) {
+                return;
+            }
+            fmg_Selected = createSelected(0, 0, 0, 0);
+        }
+        e.preventDefault();
+        e.stopPropagation();
+        //draw selected
         if (x < p1x) {   //left
             fmg_Selected.style.left = x + 'px';
         } else {
@@ -58,52 +66,55 @@ fmg.onmousedown = function (p1) {
     }
 
     fmg.onmouseup = function (p2) {
-        p2.preventDefault();
-        p2.stopPropagation();
-        //xy
-        var p2x = p2.pageX;
-        var p2y = p2.pageY - document.getElementById("contents").offsetTop;
-        //select
-        var fileObj = document.getElementsByClassName("fileObject");
-        for (var i = 0; i < fileObj.length; i++) {
-            if (
-                (
-                    //左边缘 x轴在p1与p2的之间
-                    (fileObj[i].offsetLeft >= p1x && fileObj[i].offsetLeft <= p2x) || //向右拖
-                    (fileObj[i].offsetLeft <= p1x && fileObj[i].offsetLeft >= p2x) || //向左拖
-                    //右边缘 x轴在p1与p2的之间
-                    (fileObj[i].offsetLeft + fileObj[i].offsetWidth >= p1x &&
-                        fileObj[i].offsetLeft + fileObj[i].offsetWidth <= p2x) ||    //向右拖
-                    (fileObj[i].offsetLeft + fileObj[i].offsetWidth <= p1x &&
-                        fileObj[i].offsetLeft + fileObj[i].offsetWidth >= p2x) ||   //向左拖
-                    //p1和p2同时在左右边缘中间
-                    (fileObj[i].offsetLeft <= p1x && fileObj[i].offsetLeft + fileObj[i].offsetWidth >= p1x &&
-                        fileObj[i].offsetLeft <= p2x && fileObj[i].offsetLeft + fileObj[i].offsetWidth >= p2x)
-                ) && (
-                    //上边缘 y轴在p1与p2的之间
-                    (fileObj[i].offsetTop >= p1y && fileObj[i].offsetTop <= p2y) || //向下拖
-                    (fileObj[i].offsetTop <= p1y && fileObj[i].offsetTop >= p2y) || //向上拖
-                    //下边缘 y轴在p1与p2的之间
-                    (fileObj[i].offsetTop + fileObj[i].offsetHeight >= p1y &&
-                        fileObj[i].offsetTop + fileObj[i].offsetHeight <= p2y) ||   //向下拖
-                    (fileObj[i].offsetTop + fileObj[i].offsetHeight <= p1y &&
-                        fileObj[i].offsetTop + fileObj[i].offsetHeight >= p2y) ||   //向上拖
-                    //p1和p2同时在上下边缘中间
-                    (fileObj[i].offsetTop <= p1y && fileObj[i].offsetTop + fileObj[i].offsetHeight >= p1y &&
-                        fileObj[i].offsetTop <= p2y && fileObj[i].offsetTop + fileObj[i].offsetHeight >= p2y)
-                )
-            ) {
-                fileObj[i].getElementsByClassName("mdl-checkbox__input")[0].click();
-                //createSelected(fileObj[i].offsetLeft,
-                //    fileObj[i].offsetTop,
-                //    fileObj[i].offsetWidth,
-                //    fileObj[i].offsetHeight);
-                console.log(fileObj[i]);
+        if (fmg_Selected) {   //忽略鼠标抖动
+            p2.preventDefault();
+            p2.stopPropagation();
+            //xy
+            var p2x = p2.pageX;
+            var p2y = p2.pageY - document.getElementById("contents").offsetTop;
+            //select
+            var fileObj = document.getElementsByClassName("fileObject");
+            for (var i = 0; i < fileObj.length; i++) {
+                if (
+                    (
+                        //左边缘 x轴在p1与p2的之间
+                        (fileObj[i].offsetLeft >= p1x && fileObj[i].offsetLeft <= p2x) || //向右拖
+                        (fileObj[i].offsetLeft <= p1x && fileObj[i].offsetLeft >= p2x) || //向左拖
+                        //右边缘 x轴在p1与p2的之间
+                        (fileObj[i].offsetLeft + fileObj[i].offsetWidth >= p1x &&
+                            fileObj[i].offsetLeft + fileObj[i].offsetWidth <= p2x) ||    //向右拖
+                        (fileObj[i].offsetLeft + fileObj[i].offsetWidth <= p1x &&
+                            fileObj[i].offsetLeft + fileObj[i].offsetWidth >= p2x) ||   //向左拖
+                        //p1和p2同时在左右边缘中间
+                        (fileObj[i].offsetLeft <= p1x && fileObj[i].offsetLeft + fileObj[i].offsetWidth >= p1x &&
+                            fileObj[i].offsetLeft <= p2x && fileObj[i].offsetLeft + fileObj[i].offsetWidth >= p2x)
+                    ) && (
+                        //上边缘 y轴在p1与p2的之间
+                        (fileObj[i].offsetTop >= p1y && fileObj[i].offsetTop <= p2y) || //向下拖
+                        (fileObj[i].offsetTop <= p1y && fileObj[i].offsetTop >= p2y) || //向上拖
+                        //下边缘 y轴在p1与p2的之间
+                        (fileObj[i].offsetTop + fileObj[i].offsetHeight >= p1y &&
+                            fileObj[i].offsetTop + fileObj[i].offsetHeight <= p2y) ||   //向下拖
+                        (fileObj[i].offsetTop + fileObj[i].offsetHeight <= p1y &&
+                            fileObj[i].offsetTop + fileObj[i].offsetHeight >= p2y) ||   //向上拖
+                        //p1和p2同时在上下边缘中间
+                        (fileObj[i].offsetTop <= p1y && fileObj[i].offsetTop + fileObj[i].offsetHeight >= p1y &&
+                            fileObj[i].offsetTop <= p2y && fileObj[i].offsetTop + fileObj[i].offsetHeight >= p2y)
+                    )
+                ) {
+                    fileObj[i].getElementsByClassName("mdl-checkbox__input")[0].click();
+                    //createSelected(fileObj[i].offsetLeft,
+                    //    fileObj[i].offsetTop,
+                    //    fileObj[i].offsetWidth,
+                    //    fileObj[i].offsetHeight);
+                    console.log(fileObj[i]);
+                }
             }
+            //clear
+            fmg_Selected.parentElement.removeChild(fmg_Selected);
+            fmg_Selected = null;
         }
         //clear
-        fmg_Selected.parentElement.removeChild(fmg_Selected);
-        fmg_Selected = null;
         fmg.onmousemove = null;
         fmg.onmouseup = null;
     }
