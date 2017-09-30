@@ -21,27 +21,29 @@ document.getElementById("btn_navigate_next").onclick = function (e) {
 fmg.onmousedown = function (p1) {
     p1.preventDefault();
     p1.stopPropagation();
-    var fmg_Selected = document.createElement("div");
-    fmg_Selected.className = "fmg_Selected";
-    fmg.appendChild(fmg_Selected);
-
+    //xy
+    var p1x = p1.pageX;
+    var p1y = p1.pageY - document.getElementById("contents").offsetTop;
+    //create element
+    var fmg_Selected = createSelected(0, 0, 0, 0);
+    //event
     fmg.onmousemove = function (e) {
         e.preventDefault();
         e.stopPropagation();
-
-
-        if (e.offsetX < p1.offsetX) {   //left
-            fmg_Selected.style.left = e.offsetX + fmg.offsetLeft + 'px';
+        var x = e.pageX;
+        var y = e.pageY - document.getElementById("contents").offsetTop;
+        if (x < p1x) {   //left
+            fmg_Selected.style.left = x + 'px';
         } else {
-            fmg_Selected.style.left = p1.offsetX + fmg.offsetLeft + 'px';
+            fmg_Selected.style.left = p1x + 'px';
         }
-        fmg_Selected.style.width = Math.abs(e.offsetX - p1.offsetX) + 'px';
-        if (e.offsetY < p1.offsetY) { //up
-            fmg_Selected.style.top = e.offsetY + fmg.offsetTop + 'px';
+        fmg_Selected.style.width = Math.abs(x - p1x) + 'px';
+        if (y < p1y) { //up
+            fmg_Selected.style.top = y + 'px';
         } else {
-            fmg_Selected.style.top = p1.offsetY + fmg.offsetTop + 'px';
+            fmg_Selected.style.top = p1y + 'px';
         }
-        fmg_Selected.style.height = Math.abs(e.offsetY - p1.offsetY) + 'px';
+        fmg_Selected.style.height = Math.abs(y - p1y) + 'px';
     }
 
     function createSelected(x, y, w, h) {
@@ -52,45 +54,55 @@ fmg.onmousedown = function (p1) {
         fmg_Selected.style.width = w + 'px';
         fmg_Selected.style.height = h + 'px';
         fmg.appendChild(fmg_Selected);
+        return fmg_Selected;
     }
 
     fmg.onmouseup = function (p2) {
         p2.preventDefault();
         p2.stopPropagation();
+        //xy
+        var p2x = p2.pageX;
+        var p2y = p2.pageY - document.getElementById("contents").offsetTop;
+        //select
         var fileObj = document.getElementsByClassName("fileObject");
         for (var i = 0; i < fileObj.length; i++) {
             if (
                 (
                     //左边缘 x轴在p1与p2的之间
-                    (fileObj[i].offsetLeft > p1.clientX && fileObj[i].offsetLeft < p2.clientX) ||
-                    (fileObj[i].offsetLeft < p1.clientX && fileObj[i].offsetLeft > p2.clientX) ||
+                    (fileObj[i].offsetLeft >= p1x && fileObj[i].offsetLeft <= p2x) || //向右拖
+                    (fileObj[i].offsetLeft <= p1x && fileObj[i].offsetLeft >= p2x) || //向左拖
                     //右边缘 x轴在p1与p2的之间
-                    (fileObj[i].offsetLeft + fileObj[i].offsetWidth > p1.clientX &&
-                        fileObj[i].offsetLeft + fileObj[i].offsetWidth < p2.clientX) ||
-                    (fileObj[i].offsetLeft + fileObj[i].offsetWidth < p1.clientX &&
-                        fileObj[i].offsetLeft + fileObj[i].offsetWidth > p2.clientX)
+                    (fileObj[i].offsetLeft + fileObj[i].offsetWidth >= p1x &&
+                        fileObj[i].offsetLeft + fileObj[i].offsetWidth <= p2x) ||    //向右拖
+                    (fileObj[i].offsetLeft + fileObj[i].offsetWidth <= p1x &&
+                        fileObj[i].offsetLeft + fileObj[i].offsetWidth >= p2x) ||   //向左拖
+                    //p1和p2同时在左右边缘中间
+                    (fileObj[i].offsetLeft <= p1x && fileObj[i].offsetLeft + fileObj[i].offsetWidth >= p1x &&
+                        fileObj[i].offsetLeft <= p2x && fileObj[i].offsetLeft + fileObj[i].offsetWidth >= p2x)
                 ) && (
                     //上边缘 y轴在p1与p2的之间
-                    (fileObj[i].offsetTop > p1.clientY && fileObj[i].offsetTop < p2.clientY) ||
-                    (fileObj[i].offsetTop < p1.clientY && fileObj[i].offsetTop > p2.clientY) ||
+                    (fileObj[i].offsetTop >= p1y && fileObj[i].offsetTop <= p2y) || //向下拖
+                    (fileObj[i].offsetTop <= p1y && fileObj[i].offsetTop >= p2y) || //向上拖
                     //下边缘 y轴在p1与p2的之间
-                    (fileObj[i].offsetTop + fileObj[i].offsetHeight > p1.clientY &&
-                        fileObj[i].offsetTop + fileObj[i].offsetHeight < p2.clientY) ||
-                    (fileObj[i].offsetTop + fileObj[i].offsetHeight < p1.clientY &&
-                        fileObj[i].offsetTop + fileObj[i].offsetHeight > p2.clientY)
+                    (fileObj[i].offsetTop + fileObj[i].offsetHeight >= p1y &&
+                        fileObj[i].offsetTop + fileObj[i].offsetHeight <= p2y) ||   //向下拖
+                    (fileObj[i].offsetTop + fileObj[i].offsetHeight <= p1y &&
+                        fileObj[i].offsetTop + fileObj[i].offsetHeight >= p2y) ||   //向上拖
+                    //p1和p2同时在上下边缘中间
+                    (fileObj[i].offsetTop <= p1y && fileObj[i].offsetTop + fileObj[i].offsetHeight >= p1y &&
+                        fileObj[i].offsetTop <= p2y && fileObj[i].offsetTop + fileObj[i].offsetHeight >= p2y)
                 )
             ) {
-                //if (true) {
                 fileObj[i].getElementsByClassName("mdl-checkbox__input")[0].click();
-                createSelected(fileObj[i].offsetLeft,
-                    fileObj[i].offsetTop + 112,
-                    fileObj[i].offsetWidth,
-                    fileObj[i].offsetHeight);
+                //createSelected(fileObj[i].offsetLeft,
+                //    fileObj[i].offsetTop,
+                //    fileObj[i].offsetWidth,
+                //    fileObj[i].offsetHeight);
                 console.log(fileObj[i]);
             }
         }
         //clear
-        //fmg_Selected.parentElement.removeChild(fmg_Selected);
+        fmg_Selected.parentElement.removeChild(fmg_Selected);
         fmg_Selected = null;
         fmg.onmousemove = null;
         fmg.onmouseup = null;
