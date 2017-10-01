@@ -85,6 +85,16 @@
         pointer-events: none;
     }
 
+/* rightClickMenu */
+#rightClickMenu {
+    height: 200px;
+    width: 150px;
+    border: 1px solid aqua;
+    position: absolute;
+    z-index: 1000;
+    visibility: hidden;
+}
+
 /* fileObject */
 .fileObject > .mdl-card {
     width: 100%;

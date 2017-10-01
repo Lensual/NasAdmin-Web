@@ -148,8 +148,46 @@ fmg.onmousedown = function (p1) {
     }
 }
 
+fmg.oncontextmenu = function (e) {
+    var rightClickMenu = document.getElementById("rightClickMenu");
+    rightClickMenu.style.visibility = "visible";
+    rightClickMenu.style.left = e.clientX - document.getElementById("contents").offsetLeft + 'px';
+    rightClickMenu.style.top = e.clientY - document.getElementById("contents").offsetTop + 'px';
+    //clear menu
+    var toclear = rightClickMenu.getElementsByClassName("mdl-menu");
+    for (var i = 0; i < toclear.length; i++) {
+        toclear[i].parentElement.removeChild(toclear[i]);
+    }
+    //create menu
+    var element_mdlMenu = mdlMenu();
+    rightClickMenu.appendChild(element_mdlMenu);
+    var object_mdlMenu = new MaterialMenu(element_mdlMenu);
+    ////hide menu
+    //var mdlMenu = new MaterialMenu(rightClickMenu.getElementsByClassName("mdl-menu")[0]);
+    //mdlMenu.hide();
+    //rightClickMenu.getElementsByClassName("mdl-menu__container")[0].classList.remove("is-visible");
 
+    //show menu
+    document.getElementById("rightClickMenu_hiddenbutton").click();
+    return false;
 
+    function mdlMenu() {
+        var ul = document.createElement("ul");
+        ul.className = "mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect";
+        ul.setAttribute("for", "rightClickMenu_hiddenbutton");
+        for (var i = 0; i < 10; i++) {
+            ul.appendChild(createli("innerText"));
+        }
+        return ul;
+
+        function createli(innerText) {
+            var li = document.createElement(li);
+            li.className = "mdl-menu__item";
+            li.innerText = innerText;
+            return li;
+        }
+    }
+}
 
 //debug
 for (var i = 0; i < 10; i++) {
