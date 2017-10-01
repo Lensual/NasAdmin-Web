@@ -53,7 +53,26 @@ fmg.onmousedown = function (p1) {
         }
         e.preventDefault();
         e.stopPropagation();
-        //draw selected
+        //update selected
+        updateSelected(x, y);
+        //×¢²á¹ö¶¯¸üÐÂ
+        fmg.parentElement.onscroll = function () {
+            fmg.onmousemove(e);
+        }
+    }
+
+    function createSelected(x, y, w, h) {
+        var fmg_Selected = document.createElement("div");
+        fmg_Selected.className = "fmg_Selected";
+        fmg_Selected.style.left = x + 'px';
+        fmg_Selected.style.top = y + 'px';
+        fmg_Selected.style.width = w + 'px';
+        fmg_Selected.style.height = h + 'px';
+        fmg.appendChild(fmg_Selected);
+        return fmg_Selected;
+    }
+
+    function updateSelected(x, y) {
         if (x < p1x) {   //left
             fmg_Selected.style.left = x - fmg.parentElement.scrollLeft + 'px';
         } else {
@@ -66,17 +85,6 @@ fmg.onmousedown = function (p1) {
             fmg_Selected.style.top = p1y - fmg.parentElement.scrollTop + 'px';
         }
         fmg_Selected.style.height = Math.abs(y - p1y) + 'px';
-    }
-
-    function createSelected(x, y, w, h) {
-        var fmg_Selected = document.createElement("div");
-        fmg_Selected.className = "fmg_Selected";
-        fmg_Selected.style.left = x + 'px';
-        fmg_Selected.style.top = y + 'px';
-        fmg_Selected.style.width = w + 'px';
-        fmg_Selected.style.height = h + 'px';
-        fmg.appendChild(fmg_Selected);
-        return fmg_Selected;
     }
 
     fmg.onmouseup = function (p2) {
@@ -126,17 +134,20 @@ fmg.onmousedown = function (p1) {
             //clear
             fmg_Selected.parentElement.removeChild(fmg_Selected);
             fmg_Selected = null;
+            fmg_select_mouseleavedCallback = null;
+            fmg.parentElement.onscroll = null;
         }
         //clear
         fmg.onmousemove = null;
         fmg.onmouseup = null;
-        fmg_select_mouseleavedCallback = null;
+        fmg.onmouseleave = null;
     }
 
     fmg.onmouseleave = function () {
         fmg_select_mouseleavedCallback = fmg.onmouseup;
     }
 }
+
 
 
 
