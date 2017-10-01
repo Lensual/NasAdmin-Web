@@ -26,15 +26,15 @@ fmg.onmousedown = function (p1) {
     //防止鼠标拖选移出区域mouseup失效处理
     if (fmg_select_mouseleavedCallback) { return fmg_select_mouseleavedCallback(p1); }
     //xy
-    var p1x = p1.pageX;
-    var p1y = p1.pageY - document.getElementById("contents").offsetTop;
+    var p1x = p1.pageX - document.getElementById("contents").offsetLeft + fmg.parentElement.scrollLeft;
+    var p1y = p1.pageY - document.getElementById("contents").offsetTop + fmg.parentElement.scrollTop;
     //element
     var fmg_Selected;
     var fileObj;
     //event
     fmg.onmousemove = function (e) {
-        var x = e.pageX;
-        var y = e.pageY - document.getElementById("contents").offsetTop;
+        var x = e.pageX - document.getElementById("contents").offsetLeft + fmg.parentElement.scrollLeft;
+        var y = e.pageY - document.getElementById("contents").offsetTop + fmg.parentElement.scrollTop;
         //忽略鼠标抖动
         if (!fmg_Selected) {
             if ((Math.abs(p1x - x) < 3 || Math.abs(p1y - y) < 3)) {
@@ -55,15 +55,15 @@ fmg.onmousedown = function (p1) {
         e.stopPropagation();
         //draw selected
         if (x < p1x) {   //left
-            fmg_Selected.style.left = x + 'px';
+            fmg_Selected.style.left = x - fmg.parentElement.scrollLeft + 'px';
         } else {
-            fmg_Selected.style.left = p1x + 'px';
+            fmg_Selected.style.left = p1x - fmg.parentElement.scrollLeft + 'px';
         }
         fmg_Selected.style.width = Math.abs(x - p1x) + 'px';
         if (y < p1y) { //up
-            fmg_Selected.style.top = y + 'px';
+            fmg_Selected.style.top = y - fmg.parentElement.scrollTop + 'px';
         } else {
-            fmg_Selected.style.top = p1y + 'px';
+            fmg_Selected.style.top = p1y - fmg.parentElement.scrollTop + 'px';
         }
         fmg_Selected.style.height = Math.abs(y - p1y) + 'px';
     }
@@ -84,8 +84,8 @@ fmg.onmousedown = function (p1) {
             p2.preventDefault();
             p2.stopPropagation();
             //xy
-            var p2x = p2.pageX;
-            var p2y = p2.pageY - document.getElementById("contents").offsetTop;
+            var p2x = p2.pageX - document.getElementById("contents").offsetLeft + fmg.parentElement.scrollLeft;
+            var p2y = p2.pageY - document.getElementById("contents").offsetTop + fmg.parentElement.scrollTop;
             //select
             for (var i = 0; i < fileObj.length; i++) {
                 if (
