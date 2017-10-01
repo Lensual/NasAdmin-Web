@@ -18,14 +18,19 @@ document.getElementById("btn_navigate_next").onclick = function (e) {
         readDirSync(path, false);
     }
 }
+
+var fmg_select_mouseleavedCallback;
 fmg.onmousedown = function (p1) {
     p1.preventDefault();
     p1.stopPropagation();
+    //防止鼠标拖选移出区域mouseup失效处理
+    if (fmg_select_mouseleavedCallback) { return fmg_select_mouseleavedCallback(p1); }
     //xy
     var p1x = p1.pageX;
     var p1y = p1.pageY - document.getElementById("contents").offsetTop;
     //element
     var fmg_Selected;
+    var fileObj;
     //event
     fmg.onmousemove = function (e) {
         var x = e.pageX;
@@ -35,6 +40,15 @@ fmg.onmousedown = function (p1) {
             if ((Math.abs(p1x - x) < 3 || Math.abs(p1y - y) < 3)) {
                 return;
             }
+            //clear checked
+            fileObj = document.getElementsByClassName("fileObject");
+            for (var i = 0; i < fileObj.length; i++) {
+                var checkbox = fileObj[i].getElementsByClassName("mdl-checkbox__input")[0]
+                if (checkbox.checked) {
+                    checkbox.click();
+                }
+            }
+            //create element
             fmg_Selected = createSelected(0, 0, 0, 0);
         }
         e.preventDefault();
@@ -73,7 +87,6 @@ fmg.onmousedown = function (p1) {
             var p2x = p2.pageX;
             var p2y = p2.pageY - document.getElementById("contents").offsetTop;
             //select
-            var fileObj = document.getElementsByClassName("fileObject");
             for (var i = 0; i < fileObj.length; i++) {
                 if (
                     (
@@ -102,12 +115,12 @@ fmg.onmousedown = function (p1) {
                             fileObj[i].offsetTop <= p2y && fileObj[i].offsetTop + fileObj[i].offsetHeight >= p2y)
                     )
                 ) {
-                    fileObj[i].getElementsByClassName("mdl-checkbox__input")[0].click();
+                    var checkbox = fileObj[i].getElementsByClassName("mdl-checkbox__input")[0];
+                    checkbox.click();
                     //createSelected(fileObj[i].offsetLeft,
                     //    fileObj[i].offsetTop,
                     //    fileObj[i].offsetWidth,
                     //    fileObj[i].offsetHeight);
-                    console.log(fileObj[i]);
                 }
             }
             //clear
@@ -117,8 +130,14 @@ fmg.onmousedown = function (p1) {
         //clear
         fmg.onmousemove = null;
         fmg.onmouseup = null;
+        fmg_select_mouseleavedCallback = null;
+    }
+
+    fmg.onmouseleave = function () {
+        fmg_select_mouseleavedCallback = fmg.onmouseup;
     }
 }
+
 
 
 //debug
