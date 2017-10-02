@@ -19,14 +19,14 @@ document.getElementById("btn_navigate_next").onclick = function (e) {
     }
 }
 
-var fmg_select_mouseleavedCallback;
+var fmg_select_mouseleaved;
 fmg.onmousedown = function (p1) {
     //左键
     if (p1.button != 0) { return; }
     p1.preventDefault();
     p1.stopPropagation();
     //防止鼠标拖选移出区域mouseup失效处理
-    if (fmg_select_mouseleavedCallback) { return fmg_select_mouseleavedCallback(p1); }
+    if (fmg_select_mouseleaved) { return; }
     //xy
     var p1x = p1.pageX - document.getElementById("contents").offsetLeft + fmg.parentElement.scrollLeft;
     var p1y = p1.pageY - document.getElementById("contents").offsetTop + fmg.parentElement.scrollTop;
@@ -136,7 +136,7 @@ fmg.onmousedown = function (p1) {
             //clear
             fmg_Selected.parentElement.removeChild(fmg_Selected);
             fmg_Selected = null;
-            fmg_select_mouseleavedCallback = null;
+            fmg_select_mouseleaved = null;
             fmg.parentElement.onscroll = null;
         }
         //clear
@@ -146,7 +146,7 @@ fmg.onmousedown = function (p1) {
     }
 
     fmg.onmouseleave = function () {
-        fmg_select_mouseleavedCallback = fmg.onmouseup;
+        fmg_select_mouseleaved = true;
     }
 }
 
