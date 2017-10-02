@@ -19,6 +19,7 @@ document.getElementById("btn_navigate_next").onclick = function (e) {
     }
 }
 
+//拖选
 var fmg_select_mouseleaved;
 fmg.onmousedown = function (p1) {
     //左键
@@ -150,6 +151,7 @@ fmg.onmousedown = function (p1) {
     }
 }
 
+//右击菜单
 fmg.oncontextmenu = function (e) {
     var rightClickMenu = document.getElementById("rightClickMenu");
     rightClickMenu.style.left = e.clientX - document.getElementById("contents").offsetLeft + 'px';
@@ -174,15 +176,47 @@ fmg.oncontextmenu = function (e) {
         var ul = document.createElement("ul");
         ul.className = "mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect";
         ul.setAttribute("for", "rightClickMenu_hiddenbutton");
-        for (var i = 0; i < 5; i++) {
-            ul.appendChild(createli("innerText"));
-        }
+        //create li
+        ul.appendChild(createli("Open", function () {
+            //向上查找fileObject
+            for (var i = 0; i < e.path.length; i++) {
+                for (var j = 0; j < e.path[i].classList.length; j++) {
+                    if (e.path[i].classList[j] == "mdl-card") {
+                        e.path[i].click();
+                        return;
+                    }
+                }
+            }
+        }));
+        ul.appendChild(createli("Download", function () {
+
+        }));
+        ul.appendChild(createli("Cut", function () {
+
+        }));
+        ul.appendChild(createli("Copy", function () {
+
+        }));
+        ul.appendChild(createli("Paste", function () {
+
+        }));
+        ul.appendChild(createli("Delete", function () {
+
+        }));
+        ul.appendChild(createli("Rename", function () {
+
+        }));
+        ul.appendChild(createli("Property", function () {
+
+        }));
+
         return ul;
 
-        function createli(innerText) {
+        function createli(innerText, onclick) {
             var li = document.createElement("li");
             li.className = "mdl-menu__item";
             li.innerText = innerText;
+            li.onclick = onclick;
             return li;
         }
     }
@@ -204,8 +238,10 @@ for (var i = 0; i < 10; i++) {
     fmg.appendChild(fileObject("album", "album"));
 }
 
+//run
 readDirSync("/", false);
 
+//functions
 function readDirSync(path, recHistory) {
     httpGet(apiUrl + "/fs/readDirSync/?path=" + path, window.token, function (xhr) {
         if (xhr.status == 200) {
