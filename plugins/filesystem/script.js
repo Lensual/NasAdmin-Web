@@ -308,11 +308,22 @@ function fileObject(fileName, fileType) {
         mdlCard.appendChild(fileCheckBox());
         mdlCard.appendChild(mdlCard__title(fileType));
         mdlCard.appendChild(mdlCard__actions(fileName));
+        mdlCard.onmousedown = mdlCard_onmousedown;
         mdlCard.onclick = mdlCard_onclick;
         componentHandler.upgradeElement(mdlCard);
         return mdlCard;
 
+        var dontClick = false;  //防止拖选时鼠标移回选区后按下导致触发Click
+        function mdlCard_onmousedown(e) {
+            if (fmg_select_mouseleaved) {
+                dontClick = true;
+            } else {
+                dontClick = false;
+            }
+        }
+
         function mdlCard_onclick(e) {
+            if (dontClick) { return; }
             var fileName = e.currentTarget.getElementsByClassName("file_filename")[0].textContent;
             var path = document.getElementById("file_manage_grid").getAttribute("data-path");
             readDirSync(normalizePath(path + "/" + fileName), true);
@@ -328,6 +339,7 @@ function fileObject(fileName, fileType) {
             return checkbox;
 
             function fileCheckBox_onclick(e) {
+                if (dontClick && e.isTrusted) { e.preventDefault(); }
                 e.stopPropagation();
             }
         }
