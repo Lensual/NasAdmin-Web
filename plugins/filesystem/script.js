@@ -150,11 +150,10 @@ fmg.onmousedown = function (p1) {
 
 fmg.oncontextmenu = function (e) {
     var rightClickMenu = document.getElementById("rightClickMenu");
-    rightClickMenu.style.visibility = "visible";
     rightClickMenu.style.left = e.clientX - document.getElementById("contents").offsetLeft + 'px';
     rightClickMenu.style.top = e.clientY - document.getElementById("contents").offsetTop + 'px';
     //clear menu
-    var toclear = rightClickMenu.getElementsByClassName("mdl-menu");
+    var toclear = rightClickMenu.getElementsByClassName("mdl-menu__container");
     for (var i = 0; i < toclear.length; i++) {
         toclear[i].parentElement.removeChild(toclear[i]);
     }
@@ -162,10 +161,8 @@ fmg.oncontextmenu = function (e) {
     var element_mdlMenu = mdlMenu();
     rightClickMenu.appendChild(element_mdlMenu);
     var object_mdlMenu = new MaterialMenu(element_mdlMenu);
-    ////hide menu
-    //var mdlMenu = new MaterialMenu(rightClickMenu.getElementsByClassName("mdl-menu")[0]);
-    //mdlMenu.hide();
-    //rightClickMenu.getElementsByClassName("mdl-menu__container")[0].classList.remove("is-visible");
+    //fix mdl-menu__item-ripple-container
+    fix_mdlMenu_ripple(element_mdlMenu);
 
     //show menu
     document.getElementById("rightClickMenu_hiddenbutton").click();
@@ -175,16 +172,23 @@ fmg.oncontextmenu = function (e) {
         var ul = document.createElement("ul");
         ul.className = "mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect";
         ul.setAttribute("for", "rightClickMenu_hiddenbutton");
-        for (var i = 0; i < 10; i++) {
+        for (var i = 0; i < 5; i++) {
             ul.appendChild(createli("innerText"));
         }
         return ul;
 
         function createli(innerText) {
-            var li = document.createElement(li);
+            var li = document.createElement("li");
             li.className = "mdl-menu__item";
             li.innerText = innerText;
             return li;
+        }
+    }
+
+    function fix_mdlMenu_ripple(element) {
+        var tofix = element.getElementsByClassName("mdl-menu__item")
+        for (var i = 0; i < tofix.length; i++) {
+            new MaterialRipple(tofix[i]);
         }
     }
 }

@@ -87,12 +87,8 @@
 
 /* rightClickMenu */
 #rightClickMenu {
-    height: 200px;
-    width: 150px;
-    border: 1px solid aqua;
     position: absolute;
     z-index: 1000;
-    visibility: hidden;
 }
 
 /* fileObject */
