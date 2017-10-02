@@ -21,6 +21,8 @@ document.getElementById("btn_navigate_next").onclick = function (e) {
 
 var fmg_select_mouseleavedCallback;
 fmg.onmousedown = function (p1) {
+    //左键
+    if (p1.button != 0) { return; }
     p1.preventDefault();
     p1.stopPropagation();
     //防止鼠标拖选移出区域mouseup失效处理
