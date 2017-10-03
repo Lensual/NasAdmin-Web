@@ -4,14 +4,15 @@ var fmg_navHistory_before = [];
 var fmg_navHistory_next = [];
 
 //register event
-document.getElementById("btn_navigate_before").onclick = function (e) {
+//toolbar
+document.getElementById("fm_toolbar_btn_navigate_before").onclick = function (e) {
     var path = fmg_navHistory_before.pop();
     if (path) {
         fmg_navHistory_next.push(fmg.getAttribute("data-path"));
         readDirSync(path, false);
     }
 }
-document.getElementById("btn_navigate_next").onclick = function (e) {
+document.getElementById("fm_toolbar_btn_navigate_next").onclick = function (e) {
     var path = fmg_navHistory_next.pop();
     if (path) {
         fmg_navHistory_before.push(fmg.getAttribute("data-path"));
