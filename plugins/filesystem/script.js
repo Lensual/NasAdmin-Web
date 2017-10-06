@@ -1,7 +1,10 @@
+//fmg
 var fmg = document.getElementById("file_manage_grid");
+//toolbar elements
 var toolbarUrl_input = document.getElementById("toolbar-url_input");
-var fmg_navHistory_before = [];
-var fmg_navHistory_next = [];
+var fmg_navHistory_before = []; //后退
+var fmg_navHistory_next = [];   //前进
+var fm_toolbar_btn_upload_input = document.getElementById("fm_toolbar_btn_upload_input");   //上传文件选择框
 
 //register event
 //toolbar
@@ -18,6 +21,9 @@ document.getElementById("fm_toolbar_btn_navigate_next").onclick = function (e) {
         fmg_navHistory_before.push(fmg.getAttribute("data-path"));
         readDirSync(path, false);
     }
+}
+document.getElementById("fm_toolbar_btn_upload").onclick = function (e) {
+    fm_toolbar_btn_upload_input.click();
 }
 
 //拖选
