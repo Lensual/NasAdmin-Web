@@ -215,6 +215,21 @@ function httpPost(url, body, token, callback) {
     xhr.send(body);
 }
 
+function httpPut(url, body, type, token, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    if (!type) { type = "application/x-www-form-urlencoded"; }
+    xhr.setRequestHeader("Content-Type", type);
+    if (token) {
+        xhr.setRequestHeader("token", token);
+    }
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState != 4) { return }
+        callback(xhr);
+    }
+    xhr.send(body);
+}
+
 //Cookie
 function getCookie(c_name) {
     if (document.cookie.length > 0) {

@@ -5,6 +5,8 @@ var toolbarUrl_input = document.getElementById("toolbar-url_input");
 var fmg_navHistory_before = []; //后退
 var fmg_navHistory_next = [];   //前进
 var fm_toolbar_btn_upload_input = document.getElementById("fm_toolbar_btn_upload_input");   //上传文件选择框
+//notification
+var notification = document.getElementsByClassName("mdl-js-snackbar")[0];
 
 //register event
 //toolbar
@@ -22,8 +24,24 @@ document.getElementById("fm_toolbar_btn_navigate_next").onclick = function (e) {
         readDirSync(path, false);
     }
 }
+//toolbar upload
 document.getElementById("fm_toolbar_btn_upload").onclick = function (e) {
     fm_toolbar_btn_upload_input.click();
+}
+fm_toolbar_btn_upload_input.onchange = function (e) {
+    if (!e.target.files[0]) { return; }
+    var reader = new FileReader();
+    reader.readAsDataURL(e.target.files[0]);
+    reader.onload = function (e) {
+
+        notification.MaterialSnackbar.showSnackbar({
+            message: 'Message Sent',
+            actionHandler: function (event) { },
+            actionText: 'Undo',
+            timeout: 10000
+        });
+    }
+
 }
 
 //拖选
@@ -421,4 +439,22 @@ function normalizePath(path) {
         }
     }
     return path;
+}
+
+function uploadFiles(files) {
+    for (var i = 0; i < files[i]; i++) {
+        var reader = new FileReader();
+        reader.readAsDataURL(e.target.files[0]);
+        reader.onload = function (e) {
+            httpPost(apiUrl + "/fs/upload?path=" + path, window.token, function (xhr) {
+                if (xhr.status == 200) {
+                    console.log(xhr.responseText);
+                    var json = JSON.parse(xhr.responseText);
+                    afterReadDir(json.files, path, recHistory);
+                }
+            });
+            e.target.result
+        }
+
+    }
 }
