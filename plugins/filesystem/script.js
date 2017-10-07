@@ -442,9 +442,9 @@ function normalizePath(path) {
 function uploadFiles(files, path) {
     for (var i = 0; i < files.length; i++) {
         var reader = new FileReader();
-        reader.readAsDataURL(files[0]);
+        reader.readAsBinaryString(files[i]);
         reader.onload = function (e) {
-            httpPut(apiUrl + "/fs/upload?path=" + path, files[i], null, window.token, function (xhr) {
+            httpPut(apiUrl + "/fs/upload?path=" + path, e.target.result, null, window.token, function (xhr) {
                 if (xhr.status == 200) {
                     console.log(xhr.responseText);
 
