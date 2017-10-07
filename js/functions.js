@@ -217,7 +217,7 @@ function httpPost(url, body, token, callback) {
 
 function httpPut(url, body, type, token, callback) {
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", url, true);
+    xhr.open("PUT", url, true);
     if (!type) { type = "application/x-www-form-urlencoded"; }
     xhr.setRequestHeader("Content-Type", type);
     if (token) {

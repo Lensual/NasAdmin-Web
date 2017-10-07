@@ -30,17 +30,15 @@ document.getElementById("fm_toolbar_btn_upload").onclick = function (e) {
 }
 fm_toolbar_btn_upload_input.onchange = function (e) {
     if (!e.target.files[0]) { return; }
-    var reader = new FileReader();
-    reader.readAsDataURL(e.target.files[0]);
-    reader.onload = function (e) {
+    uploadFiles(e.target.files, fmg.getAttribute("data-path"));
 
-        notification.MaterialSnackbar.showSnackbar({
-            message: 'Message Sent',
-            actionHandler: function (event) { },
-            actionText: 'Undo',
-            timeout: 10000
-        });
-    }
+    //notification.MaterialSnackbar.showSnackbar({
+    //    message: 'Message Sent',
+    //    actionHandler: function (event) { },
+    //    actionText: 'Undo',
+    //    timeout: 10000
+    //});
+
 
 }
 
@@ -441,19 +439,17 @@ function normalizePath(path) {
     return path;
 }
 
-function uploadFiles(files) {
-    for (var i = 0; i < files[i]; i++) {
+function uploadFiles(files, path) {
+    for (var i = 0; i < files.length; i++) {
         var reader = new FileReader();
-        reader.readAsDataURL(e.target.files[0]);
+        reader.readAsDataURL(files[0]);
         reader.onload = function (e) {
-            httpPost(apiUrl + "/fs/upload?path=" + path, window.token, function (xhr) {
+            httpPut(apiUrl + "/fs/upload?path=" + path, files[i], null, window.token, function (xhr) {
                 if (xhr.status == 200) {
                     console.log(xhr.responseText);
-                    var json = JSON.parse(xhr.responseText);
-                    afterReadDir(json.files, path, recHistory);
+
                 }
             });
-            e.target.result
         }
 
     }
