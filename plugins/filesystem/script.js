@@ -41,6 +41,21 @@ fm_toolbar_btn_upload_input.onchange = function (e) {
 
 
 }
+//task_panel_head
+document.getElementById("task_panel_head").onclick = function (e) {
+    var panel = document.getElementById("task_panel");
+    var container = document.getElementById("task_panel_container")
+    if (panel.style.display == "inherit") {
+        panel.style.display = "none";
+        container.zIndex = "";
+        rmMaskLayer(container.parentElement)
+    } else {
+        panel.style.display = "inherit";
+        container.style.zIndex = "101";
+        setMaskLayer(container.parentElement,e.target.onclick);
+    }
+}
+
 
 //моя║
 var fmg_select_mouseleaved;
@@ -452,5 +467,24 @@ function uploadFiles(files, path) {
             });
         }
 
+    }
+}
+
+function setMaskLayer(element, callback) {
+    var mask = document.createElement("div");
+    mask.className = "maskLayer";
+    mask.onmousedown = function () {
+        element.removeChild(mask);
+        if (callback) { return callback(); }
+    };
+    element.appendChild(mask);
+    return mask;
+}
+
+function rmMaskLayer(element) {
+    for (var i = 0; i < element.childNodes.length; i++) {
+        if (element.childNodes[i].className == "maskLayer") {
+            return element.removeChild(element.childNodes[i]);
+        }
     }
 }
