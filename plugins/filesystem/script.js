@@ -339,11 +339,12 @@ function afterReadDir(files, path, recHistory) {
 }
 
 function waitforTask(taskId, delay, callback) {
-    addTaskToPanel(taskId,taskId);
+    addTaskToPanel(taskId, taskId);
     setTimeout(checkTask, delay, [taskId, function (result) {
         console.log(result);
         var task = JSON.parse(result);
         if (task.Status == "fulfilled") {
+            updatePanelItem(taskId, "done");
             callback(task);
         } else if (task.Status == "pending") {
             waitforTask(taskId, delay, callback);
@@ -491,7 +492,7 @@ function rmMaskLayer(element) {
     }
 }
 
-function addTaskToPanel(taskName,taskId) {
+function addTaskToPanel(taskName, taskId) {
     var item = document.createElement("div");
     item.className = "mdl-list__item mdl-list__item--two-line";
     item.appendChild(item_primary_content(taskId));
@@ -522,5 +523,14 @@ function addTaskToPanel(taskName,taskId) {
         primaryConetent.appendChild(span2);
         componentHandler.upgradeElement(primaryConetent);
         return primaryConetent;
+    }
+}
+
+function updatePanelItem(taskId, icon) {
+    var list = document.getElementById("task_panel_list");
+    for (var i = 0; i < list.children.length; i++) {
+        if (list.children[i].getElementsByClassName("mdl-list__item-sub-title")[0].innerText == taskId) {
+            list.children[i].getElementsByClassName("mdl-list__item-avatar")[0].innerText = icon;
+        }
     }
 }
