@@ -556,6 +556,6 @@ function rmAsync(target) {
 
 }
 
-function renameAsync(old,new) {
+function renameAsync(oldname,newname) {
 
 }
