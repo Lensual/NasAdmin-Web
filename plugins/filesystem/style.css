@@ -26,14 +26,14 @@
     }
 
 /* toolbar */
-.fm_toolbar{
+.fm_toolbar {
     /*margin: 10px auto 0px;*/
     width: 100%;
     z-index: 2; /*保持悬浮在上层*/
     position: absolute;
 }
 
-    .fm_toolbar> .mdl-card {
+    .fm_toolbar > .mdl-card {
         width: 98%;
         height: 50px;
         min-height: initial;
@@ -42,27 +42,27 @@
         overflow: visible;
     }
 
-    .fm_toolbar> .mdl-card {
+    .fm_toolbar > .mdl-card {
         display: inline-flex;
         flex-direction: row;
         align-items: center;
     }
 
-        .fm_toolbar> .mdl-card > div {
+        .fm_toolbar > .mdl-card > div {
             margin: 0 3px;
         }
 
-        .fm_toolbar> .mdl-card > .toolbar-url {
+        .fm_toolbar > .mdl-card > .toolbar-url {
             /*margin-left: 20px;*/
             padding: 0px 0; /*默认20 与下面减相同数*/
             width: 70%
         }
 
-            .fm_toolbar> .mdl-card > .toolbar-url > .mdl-textfield__label {
+            .fm_toolbar > .mdl-card > .toolbar-url > .mdl-textfield__label {
                 top: 4px; /*默认24 与上面减相同数*/
             }
 
-                .fm_toolbar> .mdl-card > .toolbar-url > .mdl-textfield__label::after {
+                .fm_toolbar > .mdl-card > .toolbar-url > .mdl-textfield__label::after {
                     top: 20px; /*bottom改为top定位*/
                 }
 /* toolbar end */
@@ -182,6 +182,7 @@
     text-align: center;
     width: 100%;
 }
+
 #task_panel_head {
     margin: 0 auto;
     background-color: #323232;
@@ -190,10 +191,12 @@
     border-radius: 4px 4px 0px 0px;
     cursor: pointer;
 }
+
     #task_panel_head > .material-icons {
         margin-top: -6px;
-        cursor:inherit;
+        cursor: inherit;
     }
+
 #task_panel {
     display: none;
     width: 100%;
@@ -203,10 +206,13 @@
     background-color: whitesmoke;
     margin: 0 auto;
 }
+
 #task_panel_list {
     max-width: 500px;
     margin: 0 auto;
     text-align: left;
+    max-height: 200px;
+    overflow-y: scroll;
 }
 /* task_panel end */
 

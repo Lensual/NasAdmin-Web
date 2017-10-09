@@ -47,10 +47,12 @@ document.getElementById("task_panel_head").onclick = function (e) {
     var container = document.getElementById("task_panel_container")
     if (panel.style.display == "inherit") { return clear(); }
 
+    //ÉèÖÃÕÚÕÖ
     panel.style.display = "inherit";
     container.style.zIndex = "101";
     setMaskLayer(container.parentElement, clear);
 
+    //ÇåÀíÕÚÕÖ
     function clear() {
         panel.style.display = "none";
         container.zIndex = "";
