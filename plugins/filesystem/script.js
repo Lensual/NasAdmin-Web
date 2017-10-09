@@ -58,7 +58,6 @@ document.getElementById("task_panel_head").onclick = function (e) {
     }
 }
 
-
 //моя║
 var fmg_select_mouseleaved;
 fmg.onmousedown = function (p1) {
@@ -279,7 +278,7 @@ for (var i = 0; i < 10; i++) {
 }
 
 //run
-readDirSync("/", false);
+readDir("/", false);
 
 //functions
 function readDirSync(path, recHistory) {
@@ -340,13 +339,14 @@ function afterReadDir(files, path, recHistory) {
 }
 
 function waitforTask(taskId, delay, callback) {
+    addTaskToPanel(taskId,taskId);
     setTimeout(checkTask, delay, [taskId, function (result) {
         console.log(result);
         var task = JSON.parse(result);
         if (task.Status == "fulfilled") {
             callback(task);
         } else if (task.Status == "pending") {
-            waitforTask(taskId, delay, callback)
+            waitforTask(taskId, delay, callback);
         }
     }]);
 }
@@ -488,5 +488,39 @@ function rmMaskLayer(element) {
         if (element.childNodes[i].className == "maskLayer") {
             return element.removeChild(element.childNodes[i]);
         }
+    }
+}
+
+function addTaskToPanel(taskName,taskId) {
+    var item = document.createElement("div");
+    item.className = "mdl-list__item mdl-list__item--two-line";
+    item.appendChild(item_primary_content(taskId));
+    componentHandler.upgradeElement(item);
+
+    var list = document.getElementById("task_panel_list");
+    list.insertBefore(item, list.childNodes[0]);
+
+    function item_primary_content() {
+        var primaryConetent = document.createElement("span");
+        primaryConetent.className = "mdl-list__item-primary-content";
+
+        var icon = document.createElement("i");
+        icon.className = "material-icons mdl-list__item-avatar";
+        icon.innerText = "watch_later";
+        componentHandler.upgradeElement(icon);
+
+        var span = document.createElement("span");
+        span.innerText = taskName;
+
+        var span2 = document.createElement("span");
+        span2.innerText = taskId;
+        span2.className = "mdl-list__item-sub-title";
+        componentHandler.upgradeElement(span2);
+
+        primaryConetent.appendChild(icon);
+        primaryConetent.appendChild(span);
+        primaryConetent.appendChild(span2);
+        componentHandler.upgradeElement(primaryConetent);
+        return primaryConetent;
     }
 }
