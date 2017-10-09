@@ -1,3 +1,6 @@
+//Òì²½ÂÖÑ¯ÑÓ³Ù
+var asyncDelay = 1000;
+
 //fmg
 var fmg = document.getElementById("file_manage_grid");
 //toolbar elements
@@ -280,7 +283,7 @@ for (var i = 0; i < 10; i++) {
 }
 
 //run
-readDir("/", false);
+readDirSync("/", false);
 
 //functions
 function readDirSync(path, recHistory) {
@@ -293,11 +296,11 @@ function readDirSync(path, recHistory) {
     });
 }
 
-function readDir(path, recHistory) {
+function readDirAysnc(path, recHistory) {
     httpGet(apiUrl + "/fs/readDir/?path=" + path, window.token, function (xhr) {
         if (xhr.status == 202) {
             var json = JSON.parse(xhr.responseText);
-            waitforTask(json.TaskId, 1000, function (task) {
+            waitforTask(json.TaskId, asyncDelay, function (task) {
                 afterReadDir(task.Result, path, recHistory);
             });
         }
@@ -459,7 +462,7 @@ function normalizePath(path) {
     return path;
 }
 
-function uploadFiles(files, path) {
+function uploadAsync(files, path) {
     for (var i = 0; i < files.length; i++) {
         var reader = new FileReader();
         reader.readAsBinaryString(files[i]);
@@ -467,7 +470,11 @@ function uploadFiles(files, path) {
             httpPut(apiUrl + "/fs/upload?path=" + path, e.target.result, null, window.token, function (xhr) {
                 if (xhr.status == 200) {
                     console.log(xhr.responseText);
+                    var json = JSON.parse(xhr.responseText);
+                    addTaskToPanel("upload:" + path + files[i].name, json.taskId)
+                    waitforTask(json.taskId, asyncDelay, function (task) {
 
+                    })
                 }
             });
         }
@@ -535,4 +542,20 @@ function updatePanelItem(taskId, icon) {
             list.children[i].getElementsByClassName("mdl-list__item-avatar")[0].innerText = icon;
         }
     }
+}
+
+function cpAsync(src,target) {
+
+}
+
+function mvAsync(src,target) {
+
+}
+
+function rmAsync(target) {
+
+}
+
+function renameAsync(old,new) {
+
 }
