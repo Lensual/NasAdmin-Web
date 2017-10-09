@@ -45,7 +45,7 @@ fm_toolbar_btn_upload_input.onchange = function (e) {
 document.getElementById("task_panel_head").onclick = function (e) {
     var panel = document.getElementById("task_panel");
     var container = document.getElementById("task_panel_container")
-    if (panel.style.display == "inherit") { clear(); }
+    if (panel.style.display == "inherit") { return clear(); }
 
     panel.style.display = "inherit";
     container.style.zIndex = "101";
