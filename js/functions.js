@@ -1,6 +1,8 @@
 var apiUrl = "/api";     //!!要设计自动获取地址
 window.token = "";
 var enableAutoLogin = true;
+//load libraries
+loadScript("./js/fsApiHelper.js");
 
 window.onload = function () {
     //register Login Button

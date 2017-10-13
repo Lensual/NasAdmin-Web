@@ -17,14 +17,14 @@ document.getElementById("fm_toolbar_btn_navigate_before").onclick = function (e)
     var path = fmg_navHistory_before.pop();
     if (path) {
         fmg_navHistory_next.push(fmg.getAttribute("data-path"));
-        readDirSync(path, false);
+        readDir(path, false);
     }
 }
 document.getElementById("fm_toolbar_btn_navigate_next").onclick = function (e) {
     var path = fmg_navHistory_next.pop();
     if (path) {
         fmg_navHistory_before.push(fmg.getAttribute("data-path"));
-        readDirSync(path, false);
+        readDir(path, false);
     }
 }
 //toolbar upload
@@ -283,98 +283,45 @@ for (var i = 0; i < 10; i++) {
 }
 
 //run
-readDirSync("/", false);
+readDir("/", false);
 
-//functions
-function readDirSync(path, recHistory) {
-    httpGet(apiUrl + "/fs/readDirSync/?path=" + path, window.token, function (xhr) {
-        if (xhr.status == 200) {
-            console.log(xhr.responseText);
-            var json = JSON.parse(xhr.responseText);
-            afterReadDir(json.files, path, recHistory);
+//view function
+function readDir(path, recHistory) {
+    fsApiHelper.readDirSync(path, function (result) {
+        var files = result.files;
+        //排序 文件夹靠前
+        var swap;
+        for (var i = 0; i < files.length; i++) {
+            if (files[i] &&
+                files[i].type != "Directory" &&
+                files[i + 1] &&
+                files[i + 1].type == "Directory") {
+                //swap
+                swap = files[i];
+                files[i] = files[i + 1];
+                files[i + 1] = swap;
+            }
+            //最后一个并且本轮交换过
+            if (i == files.length - 1 && swap) {
+                i = -1; //reset
+                swap = null;
+            }
         }
+        fmg.innerHTML = "";
+        //遍历 生成元素
+        for (var i = 0; i < files.length; i++) {
+            var fileObj = fileObject(files[i].name, getClassForFileType(files[i].type));
+            fmg.appendChild(fileObj);
+        }
+        //recode history
+        if (recHistory) {
+            fmg_navHistory_before.push(fmg.getAttribute("data-path"));
+            fmg_navHistory_next.splice(0, fmg_navHistory_next.length);  //clear
+        }
+        //update path
+        fmg.setAttribute("data-path", path);
+        toolbarUrl_input.value = path;
     });
-}
-
-function readDirAysnc(path, recHistory) {
-    httpGet(apiUrl + "/fs/readDir/?path=" + path, window.token, function (xhr) {
-        if (xhr.status == 202) {
-            var json = JSON.parse(xhr.responseText);
-            waitforTask(json.TaskId, asyncDelay, function (task) {
-                afterReadDir(task.Result, path, recHistory);
-            });
-        }
-    });
-}
-
-function afterReadDir(files, path, recHistory) {
-    //排序 文件夹靠前
-    var swap;
-    for (var i = 0; i < files.length; i++) {
-        if (files[i] &&
-            files[i].type != "Directory" &&
-            files[i + 1] &&
-            files[i + 1].type == "Directory") {
-            //swap
-            swap = files[i];
-            files[i] = files[i + 1];
-            files[i + 1] = swap;
-        }
-        //最后一个并且本轮交换过
-        if (i == files.length - 1 && swap) {
-            i = -1; //reset
-            swap = null;
-        }
-    }
-    fmg.innerHTML = "";
-    //遍历 生成元素
-    for (var i = 0; i < files.length; i++) {
-        var fileObj = fileObject(files[i].name, getClassForFileType(files[i].type));
-        fmg.appendChild(fileObj);
-    }
-    //recode history
-    if (recHistory) {
-        fmg_navHistory_before.push(fmg.getAttribute("data-path"));
-        fmg_navHistory_next.splice(0, fmg_navHistory_next.length);  //clear
-    }
-    //update path
-    fmg.setAttribute("data-path", path);
-    toolbarUrl_input.value = path;
-
-}
-
-function waitforTask(taskId, delay, callback) {
-    addTaskToPanel(taskId, taskId);
-    setTimeout(checkTask, delay, [taskId, function (result) {
-        console.log(result);
-        var task = JSON.parse(result);
-        if (task.Status == "fulfilled") {
-            updatePanelItem(taskId, "done");
-            callback(task);
-        } else if (task.Status == "pending") {
-            waitforTask(taskId, delay, callback);
-        }
-    }]);
-}
-
-function checkTask(args) {
-    var taskId = args[0];
-    var callback = args[1];
-    httpGet(apiUrl + "/taskqueue/check/" + taskId, window.token, function (xhr) {
-        if (xhr.status == 200) {
-            callback(xhr.responseText);
-        }
-    });
-}
-
-function getClassForFileType(type) {
-    switch (type) {
-        case "Directory":
-            return "folder";
-            break;
-        default:    //File
-            return "insert_drive_file";
-    }
 }
 
 function fileObject(fileName, fileType) {
@@ -408,7 +355,7 @@ function fileObject(fileName, fileType) {
             if (dontClick) { return; }
             var fileName = e.currentTarget.getElementsByClassName("file_filename")[0].textContent;
             var path = document.getElementById("file_manage_grid").getAttribute("data-path");
-            readDirSync(normalizePath(path + "/" + fileName), true);
+            readDir(normalizePath(path + "/" + fileName), true);
             console.log(normalizePath(path + "/" + fileName));
         }
 
@@ -441,44 +388,6 @@ function fileObject(fileName, fileType) {
             componentHandler.upgradeElement(actions);
             return actions;
         }
-    }
-}
-
-function normalizePath(path) {
-    for (var i = 0; i < path.length; i++) {
-        if (i == path.length - 1) { continue }
-        var word = path.substr(i, 2);
-        switch (word) {
-            case "\\":
-                return normalizePath(path.replace(/\\/g, "/"));
-            case "\\\\":
-                return normalizePath(path.replace(/\\\\/g, "/"));
-            case "//":
-                return normalizePath(path.replace(/\/\//g, "/"));
-            default:
-                continue;
-        }
-    }
-    return path;
-}
-
-function uploadAsync(files, path) {
-    for (var i = 0; i < files.length; i++) {
-        var reader = new FileReader();
-        reader.readAsBinaryString(files[i]);
-        reader.onload = function (e) {
-            httpPut(apiUrl + "/fs/upload?path=" + path, e.target.result, null, window.token, function (xhr) {
-                if (xhr.status == 200) {
-                    console.log(xhr.responseText);
-                    var json = JSON.parse(xhr.responseText);
-                    addTaskToPanel("upload:" + path + files[i].name, json.taskId)
-                    waitforTask(json.taskId, asyncDelay, function (task) {
-
-                    })
-                }
-            });
-        }
-
     }
 }
 
@@ -544,18 +453,56 @@ function updatePanelItem(taskId, icon) {
     }
 }
 
-function cpAsync(src,target) {
-
+//async task function
+function waitforTask(taskId, delay, callback) {
+    addTaskToPanel(taskId, taskId);
+    setTimeout(checkTask, delay, [taskId, function (result) {
+        console.log(result);
+        var task = JSON.parse(result);
+        if (task.Status == "fulfilled") {
+            updatePanelItem(taskId, "done");
+            callback(task);
+        } else if (task.Status == "pending") {
+            waitforTask(taskId, delay, callback);
+        }
+    }]);
 }
 
-function mvAsync(src,target) {
-
+function checkTask(args) {
+    var taskId = args[0];
+    var callback = args[1];
+    httpGet(apiUrl + "/taskqueue/check/" + taskId, window.token, function (xhr) {
+        if (xhr.status == 200) {
+            callback(xhr.responseText);
+        }
+    });
 }
 
-function rmAsync(target) {
-
+//helper function
+function normalizePath(path) {
+    for (var i = 0; i < path.length; i++) {
+        if (i == path.length - 1) { continue }
+        var word = path.substr(i, 2);
+        switch (word) {
+            case "\\":
+                return normalizePath(path.replace(/\\/g, "/"));
+            case "\\\\":
+                return normalizePath(path.replace(/\\\\/g, "/"));
+            case "//":
+                return normalizePath(path.replace(/\/\//g, "/"));
+            default:
+                continue;
+        }
+    }
+    return path;
+}
+function getClassForFileType(type) {
+    switch (type) {
+        case "Directory":
+            return "folder";
+            break;
+        default:    //File
+            return "insert_drive_file";
+    }
 }
 
-function renameAsync(oldname,newname) {
-
-}
