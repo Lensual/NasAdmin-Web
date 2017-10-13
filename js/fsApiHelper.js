@@ -1,11 +1,9 @@
 var fsApiHelper = new Object();
-
 fsApiHelper.readDirSync = function (path, callback) {
     httpGet(apiUrl + "/fs/readDirSync/?path=" + path, window.token, function (xhr) {
         if (xhr.status == 200) {
             console.log(xhr.responseText);
             callback(JSON.parse(xhr.responseText));
-            //afterReadDir(json.files, path, recHistory);
         }
     });
 }
@@ -14,30 +12,29 @@ fsApiHelper.readDirAysnc = function (path, callback) {
     httpGet(apiUrl + "/fs/readDir/?path=" + path, window.token, function (xhr) {
         if (xhr.status == 202) {
             var json = JSON.parse(xhr.responseText);
-            waitforTask(json.TaskId, asyncDelay, function (task) {
-                callback(task.Result);
-            });
+            callback(json);
         }
     });
 }
 
-fsApiHelper.uploadAsync = function (files, path) {
+fsApiHelper.uploadAsync = function (file, path, callback) {
+    var reader = new FileReader();
+    reader.readAsBinaryString(file);
+    reader.onload = function (e) {
+        httpPut(apiUrl + "/fs/upload?path=" + path, e.target.result, null, window.token, function (xhr) {
+            if (xhr.status == 200) {
+                console.log(xhr.responseText);
+                var json = JSON.parse(xhr.responseText);
+                callback(json);
+            }
+        });
+
+    }
+}
+
+fsApiHelper.uploadFilesAsync = function (files, path, callback) {
     for (var i = 0; i < files.length; i++) {
-        var reader = new FileReader();
-        reader.readAsBinaryString(files[i]);
-        reader.onload = function (e) {
-            httpPut(apiUrl + "/fs/upload?path=" + path, e.target.result, null, window.token, function (xhr) {
-                if (xhr.status == 200) {
-                    console.log(xhr.responseText);
-                    var json = JSON.parse(xhr.responseText);
-                    addTaskToPanel("upload:" + path + files[i].name, json.taskId)
-                    waitforTask(json.taskId, asyncDelay, function (task) {
-
-                    })
-                }
-            });
-        }
-
+        fsApiHelper.uploadAsync(files[i],path,callback)
     }
 }
 

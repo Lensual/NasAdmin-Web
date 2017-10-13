@@ -324,6 +324,15 @@ function readDir(path, recHistory) {
     });
 }
 
+function uploadFiles(files, path) {
+    fsApiHelper.uploadFilesAsync(files, path, function (json) {
+        addTaskToPanel("upload:" + path + files[i].name, json.taskId)
+        waitforTask(json.taskId, asyncDelay, function (task) {
+            updatePanelItem(task.taskId, "done");
+        });
+    });
+}
+
 function fileObject(fileName, fileType) {
     var fileObj = document.createElement("div");
     fileObj.className = "fileObject mdl-cell mdl-cell--2-col";
@@ -455,12 +464,10 @@ function updatePanelItem(taskId, icon) {
 
 //async task function
 function waitforTask(taskId, delay, callback) {
-    addTaskToPanel(taskId, taskId);
     setTimeout(checkTask, delay, [taskId, function (result) {
         console.log(result);
         var task = JSON.parse(result);
         if (task.Status == "fulfilled") {
-            updatePanelItem(taskId, "done");
             callback(task);
         } else if (task.Status == "pending") {
             waitforTask(taskId, delay, callback);
@@ -468,7 +475,7 @@ function waitforTask(taskId, delay, callback) {
     }]);
 }
 
-function checkTask(args) {
+function checkTask(args, callback) {
     var taskId = args[0];
     var callback = args[1];
     httpGet(apiUrl + "/taskqueue/check/" + taskId, window.token, function (xhr) {
