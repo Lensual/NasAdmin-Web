@@ -29,20 +29,11 @@ document.getElementById("fm_toolbar_btn_navigate_next").onclick = function (e) {
 }
 //toolbar upload
 document.getElementById("fm_toolbar_btn_upload").onclick = function (e) {
-    fm_toolbar_btn_upload_input.click();
+    fm_toolbar_btn_upload_input.click();    //触发文件选择弹窗
 }
 fm_toolbar_btn_upload_input.onchange = function (e) {
-    if (!e.target.files[0]) { return; }
+    if (!e.target.files[0]) { return; } //没有选择文件
     uploadFiles(e.target.files, fmg.getAttribute("data-path"));
-
-    //notification.MaterialSnackbar.showSnackbar({
-    //    message: 'Message Sent',
-    //    actionHandler: function (event) { },
-    //    actionText: 'Undo',
-    //    timeout: 10000
-    //});
-
-
 }
 //task_panel_head
 document.getElementById("task_panel_head").onclick = function (e) {
@@ -336,7 +327,6 @@ function uploadFile(file, path) {
         addTaskToPanel("upload:" + path + file.name, json.TaskId)
         //上传
         fsApiHelper.uploadAsync(json.TaskId, file, path, function (result) { //callback调用多次 返回chunk上传结果 （目前单chunk所以调用一次）
-            
             waitforTask(json.TaskId, asyncDelay, function (task) {   //等待服务端结束操作
                 updatePanelItem(task.TaskId, "done");
             });
@@ -469,6 +459,14 @@ function updatePanelItem(taskId, icon) {
     for (var i = 0; i < list.children.length; i++) {
         if (list.children[i].getElementsByClassName("mdl-list__item-sub-title")[0].innerText == taskId) {
             list.children[i].getElementsByClassName("mdl-list__item-avatar")[0].innerText = icon;
+            //弹出提醒
+            notification.MaterialSnackbar.showSnackbar({
+                message: '"' + list.children[i].getElementsByClassName("mdl-list__item-primary-content")[0].getElementsByTagName("span")[0].innerText + '", Done!',
+                //actionHandler: function (event) { },
+                //actionText: 'Undo',
+                timeout: 3000
+            });
+            break;
         }
     }
 }

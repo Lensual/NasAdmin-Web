@@ -27,9 +27,7 @@ fsApiHelper.newUploadTask = function (path, len, callback) {
 }
 
 fsApiHelper.uploadAsync = function (taskId, file, path, callback) {
-    //fsApiHelper.newUploadTask(path, file.size, function (json) {
     var reader = new FileReader();
-    //reader.readAsBinaryString(file);
     reader.readAsArrayBuffer(file);
     reader.onload = function (e) {
         httpPut(apiUrl + "/fs/upload?taskId=" + taskId + "&start=0&end=" + file.size, e.target.result, null, window.token, function (xhr) {
@@ -40,8 +38,6 @@ fsApiHelper.uploadAsync = function (taskId, file, path, callback) {
             }
         });
     }
-
-    //});
 }
 
 fsApiHelper.cpAsync = function (src, target) {
