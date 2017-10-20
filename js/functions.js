@@ -220,7 +220,7 @@ function httpPost(url, body, token, callback) {
 function httpPut(url, body, type, token, callback) {
     var xhr = new XMLHttpRequest();
     xhr.open("PUT", url, true);
-    if (!type) { type = "application/x-www-form-urlencoded"; }
+    if (!type) { type = "application/octet-stream"; }
     xhr.setRequestHeader("Content-Type", type);
     if (token) {
         xhr.setRequestHeader("token", token);

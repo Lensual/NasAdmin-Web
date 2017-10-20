@@ -17,25 +17,31 @@ fsApiHelper.readDirAysnc = function (path, callback) {
     });
 }
 
-fsApiHelper.uploadAsync = function (file, path, callback) {
+fsApiHelper.newUploadTask = function (path, len, callback) {
+    httpGet(apiUrl + "/fs/newUploadTask?path=" + path + "&len=" + len, window.token, function (xhr) {
+        if (xhr.status == 202) {
+            var json = JSON.parse(xhr.responseText);
+            callback(json);
+        }
+    });
+}
+
+fsApiHelper.uploadAsync = function (taskId, file, path, callback) {
+    //fsApiHelper.newUploadTask(path, file.size, function (json) {
     var reader = new FileReader();
-    reader.readAsBinaryString(file);
+    //reader.readAsBinaryString(file);
+    reader.readAsArrayBuffer(file);
     reader.onload = function (e) {
-        httpPut(apiUrl + "/fs/upload?path=" + path, e.target.result, null, window.token, function (xhr) {
-            if (xhr.status == 200) {
+        httpPut(apiUrl + "/fs/upload?taskId=" + taskId + "&start=0&end=" + file.size, e.target.result, null, window.token, function (xhr) {
+            if (xhr.status == 201) {
                 console.log(xhr.responseText);
                 var json = JSON.parse(xhr.responseText);
                 callback(json);
             }
         });
-
     }
-}
 
-fsApiHelper.uploadFilesAsync = function (files, path, callback) {
-    for (var i = 0; i < files.length; i++) {
-        fsApiHelper.uploadAsync(files[i],path,callback)
-    }
+    //});
 }
 
 fsApiHelper.cpAsync = function (src, target) {

@@ -325,10 +325,21 @@ function readDir(path, recHistory) {
 }
 
 function uploadFiles(files, path) {
-    fsApiHelper.uploadFilesAsync(files, path, function (json) {
-        addTaskToPanel("upload:" + path + files[i].name, json.taskId)
-        waitforTask(json.taskId, asyncDelay, function (task) {
-            updatePanelItem(task.taskId, "done");
+    for (var i = 0; i < files.length; i++) {
+        uploadFile(files[i], path);
+    }
+}
+
+function uploadFile(file, path) {
+    //新建任务
+    fsApiHelper.newUploadTask(path + file.name, file.size, function (json) {
+        addTaskToPanel("upload:" + path + file.name, json.TaskId)
+        //上传
+        fsApiHelper.uploadAsync(json.TaskId, file, path, function (result) { //callback调用多次 返回chunk上传结果 （目前单chunk所以调用一次）
+            
+            waitforTask(json.TaskId, asyncDelay, function (task) {   //等待服务端结束操作
+                updatePanelItem(task.TaskId, "done");
+            });
         });
     });
 }
